@@ -1,4 +1,4 @@
 # projinfo
 projet info
 
-Ceci est un prohet info
+Ceci est un projet info
