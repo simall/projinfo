@@ -78,7 +78,7 @@ class Herbivore(Animal):
         self.y = ordonnee
 
 #########
-### Est ce que ces propriétés ne seraient pas à définir de façon générale pour tous les animaux ?
+### Est ce que ces propriétés ne pourraient pas être définie de façon générale pour tous les animaux ?
 #########
 
    	@property
@@ -186,6 +186,9 @@ class Faim(Animal):
 			herbivore.change_comportement(Normal_Herbivore())
 
 	def nourriture_trouvee(self):
+		"""
+		Spécifique aux herbivores : l'animal se trouve dans la zone de la carte où se situe la nourriture.
+		"""
 		abs(self.x) <= -4 and abs(self.y) <= 4
 
 
@@ -217,3 +220,5 @@ class Carnivore(Animal):
 class Predateur1(Carnivore):
 	def __init__(self):
 		super().__init__()
+
+
