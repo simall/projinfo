@@ -13,16 +13,49 @@ class Animal(metaclass=ABCMeta):
 	"""
 
     # Création des caractéristiques communes :
-	def vieillir(self):
+	def CycleVie(self):
 		"""
-		Méthode caractérisant la vieillesse de l'animal.
+		L'animal vieilit. Les réserves en eau et nourriture de l'animal diminuent.
 		"""
 		self._vie -= 1
+		self._soif -= 1
+		self._faim -= 1
+
+	def boire(self):
+		"""
+		L'animal boit.
+		"""
+        self_soif = self._max
+        # Il boit jusqu'à remplir ses réserves.
+
+		
+
+    def eau_trouvee(self):
+    	"""
+		l'animal se trouve dans la zone de la carte où se situe l'eau.
+    	"""
+        self.x <= -16 and abs(self.y) <= 20
+
+
+	def manger(self):
+		"""
+		L'animal mange.
+		"""
+		self._faim = self._max
+
+
+	@abstractmethod
+	def nourriture_trouvee(self):
+		"""
+		Méthode abstraite : doit être redéfinie dans les sous-classes.
+		"""
+		pass
+
 
 	@abstractmethod
 	def action(self, animal):
 		"""
-		Méthode abstraite : doit être redéfinie dans les sous-classes
+		Méthode abstraite : doit être redéfinie dans les sous-classes.
 		"""
 		pass
 
@@ -78,22 +111,13 @@ class Herbivore(Animal):
 		Détection d'un prédateur : probabilité inversemement proportionnelle à la distance du prédateur.
 		"""
 		### ?????
+		pass
 
 	def a_faim(self):
-        self._faim -= 1
-        if abs(self.x)<=4 and abs(self.y)<=4:
-            self._faim = self._max
-            print("Je mange")
-        if self._faim <= 0:
-            print("Je cherche toujours à manger")
+		self._faim <= 0
 
     def a_soif(self):
-        self._soif -= 1
-        if self.x<=-16 and abs(self.y)<=20:
-            self_soif = self._max
-            print("Je bois")
-        if self._soif <= 0:
-            print("Je cherche toujours à boire")	
+    	self._soif <= 0
 
     def change_comportement(self, nouv_comportement):
     	self._comportement = nouv_comportement
@@ -125,14 +149,64 @@ class Normal_Herbivore(Animal):
 		Déplacement de l'herbivore : cherche la compagnie de ses semblables.
 		"""
 		### ????
+		pass
 
 
 
-class Fuite(Herbivore):
+class Fuite(Animal):
+	"""
+	Comportement d'un animal effrayé.
+	"""
+	def action(self,herbivore):
+		# L'herbivore va tenter de s'enfuir.
+		s_echapper = self.bouger(herbivore)
+		if s_echapper :
+			# Si l'herbivore réussit à s'échapper : retour à son comportement normal.
+			herbivore.change_comportement(Normal_Herbivore())
 
-class Faim(Herbivore):
+	def bouger(self,herbivore):
+		# 50% de chances de s'échapper.
+		return np.random.rand() < 0.5
 
-class Soif(Herbivore):
+class Faim(Animal):
+	"""
+	Comportement d'un herbivore affamé.
+	"""
+	def action(self, herbivore):
+		# L'herbivore cherche de la nourriture.
+		trouve = self.nourriture_trouvee()
+		# L'herbivore a trouvé de la nourriture.
+		if herbivore.detecte_predateur:
+			# Si l'herbivore détecte un prédateur : tentative de fuite
+			herbivore.change_comportement(Fuite())
+		elif trouve:
+			# Sinon l'herbivore mange.
+			herbivore.manger()
+			# Une fois qu'il est rassasié : retour à son comportement normal.
+			herbivore.change_comportement(Normal_Herbivore())
+
+	def nourriture_trouvee(self):
+		abs(self.x) <= -4 and abs(self.y) <= 4
+
+
+
+class Soif(Animal):
+	"""
+	Comportement d'un herbivore assoiffé.
+	"""
+	def action(self,herbivore):
+		# L'herbivore cherche de l'eau.
+		trouve = herbivore.eau_trouvee()
+		# L'herbivore a trouvé de l'eau.
+		if herbivore.detecte_predateur:
+			# Si l'herbivore détecte un prédateur : tentative de fuite
+			herbivore.change_comportement(Fuite())
+		elif trouve:
+			# Sinon l'herbivore boit.
+			herbivore.boire()
+			# L'herbivore a suffisament mangé : retour à son comportement normal.
+			herbivore.change_comportement(Normal_Herbivore())
+
 
 
 #les carnivores
