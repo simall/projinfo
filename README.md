@@ -3,4 +3,4 @@ projet info
 
 Ceci est un projet info
 
-On s'amuse comme des petits fouuu !!!
+On s'amuse comme des petits fouuus !!!
