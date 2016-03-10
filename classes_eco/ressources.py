@@ -43,10 +43,7 @@ class Herbe(Ressource):
 		old = self.quantite
 		self.quantite -= constantes.bouchee
 
-		if old == self.quantite:
-			return False
-		else:
-			return True
+		return (old-self.quantite)
 
 class Eau(Ressource):
 	def __init__(self, pos):
@@ -57,7 +54,7 @@ class Eau(Ressource):
 		self.rect = QRectF(pos[0], pos[1], constantes.carre_res[0], constantes.carre_res[1])
 
 	def reduction(self):
-		return True
+		return constantes.bouchee
 
 class Terre():
 	def __init__(self, pos):
