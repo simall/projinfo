@@ -2,8 +2,10 @@
 # -*- coding: Utf-8 -*-
 
 import sys
-import numpy as np
 from abc import abstractmethod, ABCMeta
+from PyQt5.QtCore import Qt, QPointF
+import numpy as np
+from objects import *
 
 
 #classe abstraite mère
@@ -13,8 +15,13 @@ class Animal(metaclass=ABCMeta):
 	"""
 	vie = 0
 	rapidite = 0
-	vision = (0,0)
+
+	poly = None
+	vision = None
+	pas = 0
+
 	sexe = 0
+
 	quota_nourriture = 0
 	quota_eau = 0
 
@@ -27,146 +34,68 @@ class Animal(metaclass=ABCMeta):
 		"""
 		L'animal vieilit. Les réserves en eau et nourriture de l'animal diminuent.
 		"""
-		pass
+		pass	
 
-	@abstractmethod
-	def action(self, animal):
-		"""
-		Méthode abstraite : doit être redéfinie dans les sous-classes.
-		"""
-		pass
+	def manger(self, ressource):
+		self.nourriture += ressource.reduction()
 
-	@abstractmethod
-	def bouger(self, animal):
-		pass
+	def boire(self, ressource):
+		self.eau += ressource.reduction()
 
-	@abstractmethod
-	def manger(self, animal):
-		pass
+	def tryTrans(self, sens):
+		nbp = self.poly.nbp
+		virtual_fig = self.poly
 
-	
-	def comportement_normal(self, animal):
-		pass
+		(x1,y1) = (self.poly.head().x(), self.poly.head().y())
 
-	@abstractmethod
-	def boire(self):
-		pass
+		center = self.poly.get_center()
+		(x0, y0) = (center.x(), center.y())
 
-	def fuite(self, animal):
-		s_echapper = np.random.rand()
-		# L'animal a une chance sur deux de s'enfuir.
-		if s_echapper < 0.5:
-			# L'animal réussit à s'échapper.
-			self.comportement_normal()
+		norme = np.sqrt((x1-x0)**2 + (y1-y0)**2)
+		v_t = (sens*(x1-x0)*self.pas/norme, sens*(y1-y0)*self.pas/norme)
+		Trans = np.array([[1,0,v_t[0]],[0,1,v_t[1]]])#matrice de translation
 
-	def a_faim(self):
-		if self.nourriture == 0:
-			print("J'ai faim !")
+		for i in range(nbp):
+			point = self.poly.shape.at(i)
+			pt = np.array([[point.x()],[point.y()],[1]])
+			new_point = np.dot(Trans, pt)
 
-		#rajouter si nourriture dans le champ de vision -> se déplacer vers elle
+			virtual_fig.shape.replace(i, QPointF(new_point[0], new_point[1]))
 
-	def a_soif(self):
-		if self.eau == 0:
-			print("J'ai soif !")
+		virtual_fig.shape.swap(self.poly.shape)
 
-		#rajouter si eau dans le champ de vision -> se déplacer vers elle
+	def tryRotate(self, theta):
+		nbp = self.poly.nbp
+		virtual_fig = self.poly
 
-	def champ_de_vision(self):
-		pass
+		#recuperer les coord du centre de rotation
+		center = self.poly.get_center()
+		(x0, y0) = (center.x(), center.y())
 
+		#definir la matrice de rotation
+		Rot = np.array([[np.cos(theta),-np.sin(theta)], [np.sin(theta), np.cos(theta)]])
 
-	def detecte_nourriture(self):
-		pass
+		#appliquer la rotation a l'ensemble des points
+		for i in range(nbp):
+			point = self.poly.shape.at(i)
+			pt = np.array([[point.x()-x0],[point.y()-y0]])
+			new_point = np.dot(Rot, pt)
 
+			#mettre a jour les points
+			virtual_fig.shape.replace(i, QPointF(new_point[0]+x0, new_point[1]+y0))
 
+		virtual_fig.shape.swap(self.poly.shape)
+		self.poly.heading = np.mod(self.poly.heading - theta*180/np.pi,360)
+		
 
 class Herbivore(Animal):
-	"""
-	Animal grégaire quand il n'est pas en recherche de nourriture. Il s'enfuit à l'approche d'un prédateur.
-	Détection d'un prédateur : probabilité inversemement proportionnelle à la distance du prédateur.
-	Animal possédant un comportement décrit par un automate.
-	"""
-
 	def __init__(self):
 		self.vie = 80
-		self.rapidite = 10
-		self.vision = (5,10)
-		self.quota_nourriture = 5
-		self.quota_eau = 3
+		self.rapidite = 2
+
+		self.pas = 3
+		self.poly = Triangle(50, 50, 8, 15, 90)
+		self.vision = Champ_Vison(40, np.pi/8, self.poly.heading)
 
 	def calcVie(self):
 		self.vie -= 1
-
-	def bouger(self):
-		pass
-
-	def manger(self):
-		while nourriture != quota_nourriture:
-			if self.detecte_predateur():
-				Animal.fuite(herbivore)
-				break
-			else:
-				nourriture += 1
-
-	def boire(self):
-		while eau != quota_eau:
-			if self.detecte_predateur():
-				Animal.fuite(herbivore)
-				break
-			else:
-				eau += 1
-
-	def detecte_predateur(self):
-		# prédateur dans le champ de vision 
-		pass
-
-	def action(self, ressource, ):
-		"""
-		Cas où l'herbivore sera contraint de changer de comportement.
-		"""
-		self.bouger()
-		if self.detecte_predateur():
-			# Prédateur détecté : nouveau comportement : fuite.
-			Animal.fuite()
-		elif Animal.a_faim(self):
-			# Herbivore affamé : chercher de la nourriture.
-			self.manger()
-		elif Animal.a_soif(self):
-			# Herbivore assoiffé : chercher de l'eau.
-			self.boire()
-
-
-
-		print("je mange")
-		ressource[44][27].reduction()
-
-
-
-
-
-
-
-
-class Predateur(Animal):
-	def __init__(self):
-		self.vie = 30
-		self.rapidite = 40
-		self.vision = (5,10)
-
-	def calcVie(self):
-		self.vie -= 1
-
-	def action(self, ressource):
-		pass
-
-class Charognard(Animal):
-	def __init__(self):
-		self.vie = 30
-		self.rapidite = 30
-		self.vision = (5,10)
-
-	def calcVie(self):
-		self.vie -= 1
-
-	def action(self,ressource):
-		pass
