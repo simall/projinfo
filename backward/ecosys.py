@@ -55,7 +55,7 @@ class Ecosys():
 			#fait tous ce qu'il y a à faire sur les animaux à la fin de la journée
 			for espece in self.eco:
 				for animal in self.eco[espece]:
-					animal.action(self.carto)
+					animal.manger(self.carto.carte[44][27])
 					animal.calcVie()
 
 					animal.eau = 0
