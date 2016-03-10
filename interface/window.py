@@ -16,6 +16,8 @@ from carto import *
 from ecosys import *
 import constantes
 
+from animaux import *#virer plus tard
+
 class Window(QWidget):
     def __init__(self):
         super().__init__()
@@ -25,6 +27,9 @@ class Window(QWidget):
     def initGui(self):
 
         self.eco = Ecosys()
+
+        self.ani = Herbivore()#temporaire pour les tests
+        self.ani.vision.update(self.ani.poly.head(), self.ani.poly.heading)
 
         self.resize(constantes.nb_carres_largeur*constantes.carre_res[0], constantes.nb_carres_hauteur*constantes.carre_res[1])
         self.center()
@@ -43,10 +48,25 @@ class Window(QWidget):
         qp.end()
 
 
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_Up:
+            self.ani.tryTrans(1)
+            self.ani.vision.update(self.ani.poly.head(), self.ani.poly.heading)
+        elif e.key() == Qt.Key_Down:
+            self.ani.tryTrans(-1)
+            self.ani.vision.update(self.ani.poly.head(), self.ani.poly.heading)
+        elif e.key() == Qt.Key_Left:
+            self.ani.tryRotate(-np.pi/8)
+            self.ani.vision.update(self.ani.poly.head(), self.ani.poly.heading)
+        elif e.key() == Qt.Key_Right:
+            self.ani.tryRotate(np.pi/8)
+            self.ani.vision.update(self.ani.poly.head(), self.ani.poly.heading)
+
+
     def drawPol(self, qp):
         for i in range(constantes.nb_carres_largeur):
             for j in range(constantes.nb_carres_hauteur):
-                case = self.eco.carto[i][j]
+                case = self.eco.carto.carte[i][j]
                 if case.id_res == 2:
                     #eau
                     qp.setPen(QColor(64, 178, 243))
@@ -65,6 +85,13 @@ class Window(QWidget):
                     qp.setBrush(QColor(179, 131, 62))
                     qp.drawRect(case.rect)
 
+        qp.setPen(QColor(0, 0, 0))
+        qp.setBrush(QColor(0, 0, 0))
+        qp.drawConvexPolygon(self.ani.poly.shape)
+
+        qp.setPen(QColor(255, 0, 0))
+        qp.setBrush(QColor(255, 0, 0))
+        qp.drawConvexPolygon(self.ani.vision.poly.shape)
         self.update()
 
 
