@@ -1,0 +1,34 @@
+\section*{Introduction}
+
+
+\begin{lstlisting}[caption={test}\label{lst:test}]
+# un petit commentaire pour voir ce que ça donne
+
+class Ressource(metaclass=ABCMeta):
+	"""
+	Classe abstraite pour les ressources.
+	"""
+	cycle_vie = 0
+	__quantite = 0
+	id_res = ''
+
+	@abstractmethod
+	def reduction(self):
+		pass
+
+	@property
+	def quantite(self):
+	    return self.__quantite
+
+	@quantite.setter
+	def quantite(self, quantite):
+		if quantite >= 0:
+			self.__quantite = quantite
+		else:
+			self.__quantite = 0
+\end{lstlisting}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../rapport_projinfo"
+%%% End: 
