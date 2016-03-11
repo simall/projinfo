@@ -15,6 +15,7 @@ from ressources import *
 from carto import *
 from ecosys import *
 import constantes
+from collisions import *
 
 from animaux import *#virer plus tard
 
@@ -26,10 +27,12 @@ class Window(QWidget):
 
     def initGui(self):
 
-        self.eco = Ecosys()
+        self.ecosys = Ecosys()
 
-        self.ani = Herbivore()#temporaire pour les tests
-        self.ani.vision.update(self.ani.poly.head(), self.ani.poly.heading)
+        self.ecosys.add_animal(Herbivore(), "bulbi")#pour les tests (temporaire)
+        self.ecosys.eco["bulbi"][0].vision.update(self.ecosys.eco["bulbi"][0].poly.head(), self.ecosys.eco["bulbi"][0].poly.heading)
+
+        self.ecosys.add_animal(Herbivore(), "bulbi")
 
         self.resize(constantes.nb_carres_largeur*constantes.carre_res[0], constantes.nb_carres_hauteur*constantes.carre_res[1])
         self.center()
@@ -50,23 +53,19 @@ class Window(QWidget):
 
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Up:
-            self.ani.tryTrans(1)
-            self.ani.vision.update(self.ani.poly.head(), self.ani.poly.heading)
+            self.ecosys.eco["bulbi"][0].translater(self.ecosys.carto.carte, self.ecosys.eco, 1)
         elif e.key() == Qt.Key_Down:
-            self.ani.tryTrans(-1)
-            self.ani.vision.update(self.ani.poly.head(), self.ani.poly.heading)
+            self.ecosys.eco["bulbi"][0].translater(self.ecosys.carto.carte, self.ecosys.eco, -1)
         elif e.key() == Qt.Key_Left:
-            self.ani.tryRotate(-np.pi/8)
-            self.ani.vision.update(self.ani.poly.head(), self.ani.poly.heading)
+            self.ecosys.eco["bulbi"][0].tourner(self.ecosys.carto.carte, self.ecosys.eco, -np.pi/8)
         elif e.key() == Qt.Key_Right:
-            self.ani.tryRotate(np.pi/8)
-            self.ani.vision.update(self.ani.poly.head(), self.ani.poly.heading)
+            self.ecosys.eco["bulbi"][0].tourner(self.ecosys.carto.carte, self.ecosys.eco, np.pi/8)
 
 
     def drawPol(self, qp):
         for i in range(constantes.nb_carres_largeur):
             for j in range(constantes.nb_carres_hauteur):
-                case = self.eco.carto.carte[i][j]
+                case = self.ecosys.carto.carte[i][j]
                 if case.id_res == 2:
                     #eau
                     qp.setPen(QColor(64, 178, 243))
@@ -87,11 +86,13 @@ class Window(QWidget):
 
         qp.setPen(QColor(0, 0, 0))
         qp.setBrush(QColor(0, 0, 0))
-        qp.drawConvexPolygon(self.ani.poly.shape)
+        for key_espece in self.ecosys.eco:
+            for animal in self.ecosys.eco[key_espece]:
+                qp.drawConvexPolygon(animal.poly.shape)
 
         qp.setPen(QColor(255, 0, 0))
         qp.setBrush(QColor(255, 0, 0))
-        qp.drawConvexPolygon(self.ani.vision.poly.shape)
+        qp.drawConvexPolygon(self.ecosys.eco["bulbi"][0].vision.poly.shape)
         self.update()
 
 
