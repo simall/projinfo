@@ -1,6 +1,10 @@
 #!/usr/bin/python3.4
 import random
+import constantes
 from PyQt5.QtCore import Qt, QPointF
+
+def current_case(x_h, y_h):
+    return (int(y_h//constantes.carre_res[1]), int(x_h//constantes.carre_res[0]))
 
 def check_borders(fig, size_x, size_y):
     for i in range(fig.nbp):
@@ -91,15 +95,19 @@ Check les collisions, d'abord par rectangle vu que c'est super rapide, puis si i
 on check avec la méthode par polygones
 Si il y a collision on retourne l'objet collisionné
 '''
-def check_collisions(fig, ofig, scene):
+def check_collisions(fig, key_espece, index, eco, scene):
 
     collisionedObjects = []
-    collBorders = check_borders(fig, scene.height(), scene.width())
+    collBorders = check_borders(fig, scene[0], scene[1])
 
     if collBorders:
-        for obj in ofig:
-            if check_rect_coll(fig, obj):
-                if check_glob_coll(fig, obj):
-                    collisionedObjects.append(obj)
+        for espece in eco:
+            for i in range(0, len(eco[espece])):
+                if espece != key_espece or index != i:
+                    ofig = eco[espece][i].poly
+        
+                    if check_rect_coll(fig, ofig):
+                        if check_glob_coll(fig, ofig):
+                            collisionedObjects.append(eco[espece][i])
 
     return (collisionedObjects, collBorders)
