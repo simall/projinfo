@@ -1,39 +1,185 @@
-\makeatletter\def\input@path{{styles/}{corps/}}\makeatother
+\makeatletter\def\input@path{{styles/}}\makeatother
+\documentclass[a4paper,11pt,final,oneside]{article}
 
-%% Encodage : latin1
+%\documentclass{guide}
 
-% Utiliser le style docMaitre.cls
-\documentclass{docMaitre}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc} % Permet de régler l'affichage du \textsc dans \author
+\usepackage[pdftex]{graphicx}
+\usepackage{setspace}
+\usepackage[pdftex, pdfborder={0 0 0}]{hyperref}
+\usepackage{graphicx}
+\usepackage[a4paper,vdivide={*,22cm,4cm}]{geometry}
+%\usepackage{fullpage}
 
-\title{Simulation d'un Écosystème}
-\author{P. \textsc{Erdeven \& S. \texttt{Allenic}}\\
-  \texttt{pierre.erdeven@ensta-bretagne.org} \\
-  \texttt{simon.allenic@ensta-bretagne.org}}
+%RequirePackage{diagbox} %diagbox remplace slashbox
+
+\RequirePackage{xcolor}
+
+\RequirePackage{makeidx} % creation d'index
+\RequirePackage[english,french]{babel} % style francais
+% pas d'espace automatiques avant les signes de ponctuation doubles !
+\NoAutoSpaceBeforeFDP
+
+% graphicx avec la bonne option, le chemin des images 
+% et les types d'images valides
+%\RequirePackage[pdftex]{graphicx}
+\graphicspath{{pdfs/}{pngs/}{imgs/}}
+\DeclareGraphicsExtensions{.pdf,.png,.mps}
+
+%\pdfpageattr {/Group << /S /Transparency /I true /CS /DeviceRGB>>}
+
+
+\RequirePackage{amsmath,amssymb,amsthm,euscript}
+
+\newcommand{\p}{\paragraph}
+\setlength{\parskip}{2ex}
+
+\usepackage{listingsutf8}
+\usepackage{listings}
+\definecolor{green_comment}{rgb}{0.25,0.5,0.5}
+\lstset{  
+	  inputencoding=utf8/latin1,
+	  basicstyle=\small\ttfamily\upshape,
+          keywordstyle=\color{blue}\bfseries,
+          identifierstyle=,
+          commentstyle=\ttfamily\color{green_comment},
+          stringstyle=\ttfamily\color{red},
+          showstringspaces=false,
+          numbers=left,
+          firstnumber=1,
+          numberstyle=\tiny,
+          stepnumber=1,
+          frame=single,
+          breaklines=true, 
+          language=Python,
+          literate={
+          	á}{{\'a}}{1} 
+          	{ã}{{\~a}}{1} 
+          	{é}{{\'e}}{1} 
+          	{è}{{\`e}}{1} 
+          	{à}{{\`a}}{1} 
+          	{ç}{{\c{c}}}{1} 
+          	{œ}{{\oe}}{1} 
+          	{ù}{{\`u}}{1}
+                {É}{{\'E}}{1}
+                {È}{{\`E}}{1}
+                {À}{{\`A}}{1}
+                {Ç}{{\c{C}}}{1}
+                {Œ}{{\OE}}{1}
+                {Ê}{{\^E}}{1}
+                {ê}{{\^e}}{1}
+                {î}{{\^i}}{1}
+                {ô}{{\^o}}{1}
+                {û}{{\^u}}{1}
+                {ë}{{\¨{e}}}1
+                {û}{{\^{u}}}1
+                {â}{{\^{a}}}1
+                {Â}{{\^{A}}}1
+                {Î}{{\^{I}}}1,}
+          
+%\lstset{
+%	inputencoding=utf8/latin1,
+%	language=python,                % choose the language of the code
+%	basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+%	numbers=left,                   % where to put the line-numbers
+%	numberstyle=\bf \tiny \color{black},      % the size of the fonts that are used for the line-numbers
+%	stepnumber=1,                   % the step between two line-numbers. If it is 1 each line will be numbered
+%	numbersep=5pt,                  % how far the line-numbers are from the code
+%	backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+%	showspaces=false,               % show spaces adding particular underscores
+%	showstringspaces=false,         % underline spaces within strings
+%	showtabs=false,                 % show tabs within strings adding particular underscores
+%	frame=single,           % adds a frame around the code
+%	tabsize=2,          % sets default tabsize to 2 spaces
+%	captionpos=t,           % sets the caption-position to top
+%	breaklines=true,        % sets automatic line breaking
+%	breakatwhitespace=false,    % sets if automatic breaks should only happen at whitespace
+%	escapeinside={\%*}{*)}          % if you want to add a comment within your code
+%}          
+
+\RequirePackage{pageGardeEnsta}
+\RequirePackage[xindy,acronymlists={glo},toc]{glossaries} % glossaires
+\newglossary{glo}{acr1}{acn1}{Glossaire}
+%\newglossary{gloen}{acr2}{acn2}{English glossary}
+
+\title{Simulation d'un écosystème}
+\author{Simon \textsc{Allenic} \& Pierre \textsc{Erdeven}\\
+  \texttt{simon.allenic@ensta-bretagne.org} \\
+  \texttt{pierre.erdeven@ensta-bretagne.org}}
 \date{\today}
-\doctype{Rapport du projet informatique \\ (UV 2.1)}
-\promo{CI 2018}
+\doctype{Projet Informatique}
+\promo{UV 2.1}
 \etablissement{\textsc{Ensta} Bretagne\\2, rue François Verny\\
   29806 \textsc{Brest} cedex\\\textsc{France}\\Tel +33 (0)2 98 34 88 00\\ \url{www.ensta-bretagne.fr}}
 \logoEcole{\includegraphics[height=4.2cm]{logo_ENSTA_Bretagne_Vertical_CMJN}}
 
+\pdfinfo{
+  /Title    ()
+  /Author   ()
+  /Creator  ()
+  /Producer ()
+  /Subject  ()
+  /Keywords ()
+}
+
+\newcommand{\reporttitle}{Projet Informatique}     % Titre
+\newcommand{\reportauthor}{Simon \textsc{Allenic} \& Pierre \textsc{Erdeven}} % Auteur
+\newcommand{\reportsubject}{Simulation d'un écosystème} % Sujet
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\degr}{\ensuremath{^\circ}}
+\setlength{\parskip}{2ex} % Espace entre les paragraphes
+
+\hypersetup{
+    pdftitle={\reporttitle},%
+    pdfauthor={\reportauthor},%
+    pdfsubject={\reportsubject},%
+    pdfkeywords={rapport} {ENSTA Bretagne} {IT} {Group 1}
+}
+
+
+
+
 \begin{document}
+\theoremstyle{plain}
+\newtheorem{theo}{Théorème}
+\newtheorem{mydef}{Définition}
 
-% creer le titre ici
-\maketitle
+\clearpage\maketitle
+\thispagestyle{empty}
+\newpage
 
-% chargement du fichier abstract.tex
-\input{abstract}
+\section*{Résumé}
+\addcontentsline{toc}{section}{Résumé}
 
-\clearpage
+\section*{Mots-clés}
+\addcontentsline{toc}{section}{Mots-clés}
 
-% table des matieres
+\newpage
+
 \tableofcontents
+\newpage
 
-\clearpage
-% chargement du fichier corps.tex
-\input{corps}
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
 
-\appendix
+\paragraph{} essai avec des accents éè!
+
+\begin{lstlisting}[caption={test}\label{lst:test}]
+def add_animal(self, animal, nom):
+	if nom not in self.eco:
+		self.nb_especes += 1
+
+	Temp = self.eco.get(nom, [])
+	Temp.append(animal)
+	self.eco[nom] = Temp
+
+	self.nb_animaux[nom] = self.nb_animaux.get(nom, 0) + 1
+		
+# augmente le nombre d'animaux de l'espece correspondante!
+# utf8 gère très mal les accents ÂûçéèàÉÈù
+\end{lstlisting}
+
 
 \end{document}
 
