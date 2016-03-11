@@ -7,17 +7,20 @@ import numpy as np
 
 class Shape(metaclass=ABCMeta):
 
-    def __init__(self, nbp, list_of_points, heading):
-        self.shape = QPolygonF(nbp)
-        for i in range(nbp):
-            pt = list_of_points[i]
-            self.shape.replace(i, QPointF(pt[0], pt[1]))
-        self.nbp = nbp
-        self.heading = heading
+	def __init__(self, nbp, list_of_points = None, heading = 0):
+		self.shape = QPolygonF(nbp)
+		for i in range(nbp):
+			if list_of_points is not None:
+				pt = list_of_points[i]
+			else:
+				pt = (0,0)
+			self.shape.replace(i, QPointF(pt[0], pt[1]))
+		self.nbp = nbp
+		self.heading = heading
 
-    @abstractmethod
-    def get_center(self):
-    	pass
+	@abstractmethod
+	def get_center(self):
+		pass
 
 class Triangle(Shape):
 	def __init__(self, x_h, y_h, base, hauteur, heading = 0):
@@ -73,7 +76,6 @@ class Triangle(Shape):
 		super().__init__(3, list_of_points, heading)
 
 		self.head_num = 0
-		self.center = self.get_center()
 
 	def head(self):
 		return self.shape.at(self.head_num)
