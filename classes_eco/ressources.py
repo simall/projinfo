@@ -15,6 +15,7 @@ class Ressource(metaclass=ABCMeta):
 	cycle_vie = 0
 	__quantite = 0
 	id_res = ''
+	passable = True
 
 	@abstractmethod
 	def reduction(self):
@@ -50,6 +51,7 @@ class Eau(Ressource):
 		self.cycle_vie = -1#ressource infinie
 		self.quantite = -1
 		self.id_res = 2
+		self.passable = False
 
 		self.rect = QRectF(pos[0], pos[1], constantes.carre_res[0], constantes.carre_res[1])
 
@@ -60,3 +62,4 @@ class Terre():
 	def __init__(self, pos):
 		self.id_res = 0
 		self.rect = QRectF(pos[0], pos[1], constantes.carre_res[0], constantes.carre_res[1])
+		self.passable = True
