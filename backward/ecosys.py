@@ -2,7 +2,12 @@
 # -*- coding: Utf-8 -*-
 
 import sys
-from abc import abstractmethod, ABCMeta
+
+sys.path.append('../classes_eco/')
+sys.path.append('../backward/')
+sys.path.append('../res/')
+sys.path.append('../interface/')
+
 from animaux import *
 from ressources import *
 from carto import *
@@ -18,7 +23,7 @@ class Ecosys():
 		self.nb_animaux = {}		
 		self.nb_especes = 0
 		
-		self.carto = Carto()
+		self.carto = ResMap()
 
 	def __str__(self):
 		string = ''
@@ -35,7 +40,10 @@ class Ecosys():
 			self.nb_especes += 1
 
 		#ajoute l'animal à la bonne espèce
+		animal.espece = nom
+
 		Temp = self.eco.get(nom, [])
+		animal.index = self.nb_animaux.get(nom, 0)
 		Temp.append(animal)
 		self.eco[nom] = Temp
 
@@ -48,25 +56,40 @@ class Ecosys():
 		augmente le nombre de cycles effectués
 		gère les jours
 		'''
+		jour_ecoule = False
+
 		#pour tous les animaux de l'écosystème, action !
 		self.curr_cycle = (self.curr_cycle+1)%self.nb_cycles_par_jour
 		if self.curr_cycle == 0:
 			self.nb_jours += 1
-			#fait tous ce qu'il y a à faire sur les animaux à la fin de la journée
-			for espece in self.eco:
-				for animal in self.eco[espece]:
-					animal.manger(self.carto.carte[44][27])
-					animal.calcVie()
+			jour_ecoule = True
+			animal.nourriture = 0
+			animal.eau = 0
 
-					animal.eau = 0
-					animal.nourriture = 0
+		#fait tous ce qu'il y a à faire sur les animaux à la fin de la journée
+		for espece in self.eco:
+			for animal in self.eco[espece]:
+				#appel de la fonction de collision vision
+				#appel de la fonction de collision touch
+				#appel de animal.next_state(vision, touch)
+				animal.manger(self.carto.carte[44][27])#pour l'exemple
+				animal.calcVie(jour_ecoule)
+
+	def is_dead(self, animal):
+		if animal.vie == 0:
+			return True
+		else:
+			return False
+
+	def retirer(self, espece, index):
+		self.eco[espece].pop(index)
+		self.nb_animaux[espece] -= 1
 
 if __name__ == '__main__':
-	eco = Ecosys()
-	eco.add_animal(Herbivore(), 'bulbi')
-	eco.add_animal(Herbivore(), 'bulbi')
+	ecosys = Ecosys()
+	ecosys.add_animal(Herbivore(), 'bulbi')
+	ecosys.add_animal(Herbivore(), 'bulbi')
 
-	for i in range(2500):
-		eco.next_cycle()
+	ecosys.next_cycle()
 
-	print(eco)
+	print(ecosys)
