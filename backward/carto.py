@@ -1,7 +1,7 @@
 import constantes
 from ressources import *
 
-class Carto():
+class ResMap():
 	def __init__(self):
 		fichier = open(constantes.file_carte)
 		num_line = 0
