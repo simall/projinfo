@@ -244,7 +244,7 @@
 \paragraph{} La classe \textit{Herbivore} est encore en cours d'élaboration. Dans le constructeur, on y définit les caractéristiques de l'espèce. La méthode \textit{next\_state} a pour objectif de suivre le comportement défini par l'automate de la figure~\ref{fig:her}.
 
 \begin{figure}[h!]
-\centering		
+\centering	{	
 \begin{tikzpicture}[->,>=stealth']
 
  % STATE Suivre les autres
@@ -332,14 +332,61 @@ yshift=-2cm] (Fuir)
 
 \end{tikzpicture}
 \caption{Diagramme d'état d'un herbivore}
-\label{fig:her}
+\label{fig:her}}
 \end{figure}
 
 		\subsection{Ressources}
 		
+\paragraph{} Les ressources sont gérées avec quatre classes. De la même manière que pour la gestion des espèces, les ressources ont à leur tête une classe abstraite appelée \textit{Ressource}. On y définit leurs caractéristiques communes comme leur quantité, leur cycle de vie et un identifiant. On indique également si l'animal peut marcher sur cette ressource ou non par un booléen. Cette variable se révèle importante pour l'eau qui, dans la plupart des cas, est infranchissable. En ce qui concerne leur quantité, l'eau est par hypothèse illimitée. L'herbe diminue en fonction du nombre de bouchées de l'animal.
+
+\paragraph{} Une remarque importante concerne la gestion des cadavres des animaux. Elle sera traitée dans cette partie car assimilée à une source de nourriture pour les charognards. La contrainte de la figure imposée sera remplie par la mise en place d'une liste simplement chaînée. Une case initialement herbe ou terre sera remplacée par une qui représentera le cadavre de l'animal en question. Et, redeviendra terre ou herbe après qu'un charognard l'ait mangé. La figure~\ref{fig:rep} permet de mieux visualiser ce concept. \\
+
+
+\begin{figure}[h!]
+\centering		
+\begin{tikzpicture}[->,>=stealth']
+
+ % STATE Terre ou Herbe 1
+\node[state] (Terre ou Herbe 1) 
+{\begin{tabular}{c} % création du contenu
+\textbf{Terre ou Herbe} \\
+\end{tabular}};
+
+% STATE Cadavre
+\node[state,     
+node distance=5cm,   
+right of=Terre ou Herbe 1] (Cadavre) 
+{\begin{tabular}{c}
+\textbf{Cadavre}\\
+\end{tabular}};
+
+% STATE Terre ou Herbe 2
+\node[state,     
+node distance=5cm,   
+right of=Cadavre] (Terre ou Herbe 2) 
+{\begin{tabular}{c}
+\textbf{Terre ou Herbe}\\
+\end{tabular}};
+
+\path 
+(Terre ou Herbe 1) edge (Cadavre)
+(Cadavre) edge (Terre ou Herbe 2)
+;
+
+\end{tikzpicture}
+\caption{Liste simplement chaînée pour la gestion des cadavres}
+\label{fig:rep}
+\end{figure}
+
 		\subsection{Collisions}
 	
 		\subsection{Classe \textit{Ecosys}}
+		
+\paragraph{} Cette classe est le noyau du programme. Elle gère les animaux et leur vie.
+
+			\subsubsection{Méthode \textit{add\_animal}}
+
+\paragraph{} La méthode \textit{add\_animal} permet d'ajouter un animal dans l'écosystème. 
 		
 	\section{Tests, perspectives et améliorations}
 	\label{sec:tes}
