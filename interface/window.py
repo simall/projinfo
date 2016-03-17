@@ -20,12 +20,21 @@ from collisions import *
 from animaux import *#virer plus tard
 
 class Window(QWidget):
+    '''
+    Créé une fenêtre
+    '''
     def __init__(self):
+        '''
+        Constructeur
+        '''
         super().__init__()
 
         self.initGui()
 
     def initGui(self):
+        '''
+        Initialise l'environnement graphique
+        '''
 
         self.ecosys = Ecosys()
 
@@ -40,11 +49,17 @@ class Window(QWidget):
         self.show()
 
     def center(self):
+        '''
+        Détermine le centre de la fenêtre
+        '''
         screen = QDesktopWidget().screenGeometry()
         size = self.geometry()
         self.move((screen.width() - size.width()) / 2, (screen.height() - size.height()) / 2)
 
     def paintEvent(self, event): #Override de la méthode QWidget
+        '''
+        Initialise la fonction d'affichage
+        '''
         qp = QPainter()
         qp.begin(self)
         self.drawPol(qp)
@@ -52,6 +67,9 @@ class Window(QWidget):
 
 
     def keyPressEvent(self, e):
+        '''
+        Gère les évènements clavier
+        '''
         if e.key() == Qt.Key_Up:
             self.ecosys.eco["bulbi"][0].translater(self.ecosys.carto.carte, self.ecosys.eco, 1)
         elif e.key() == Qt.Key_Down:
@@ -63,6 +81,9 @@ class Window(QWidget):
 
 
     def drawPol(self, qp):
+        '''
+        Affiche les éléments à l'écran
+        '''
         for i in range(constantes.nb_carres_largeur):
             for j in range(constantes.nb_carres_hauteur):
                 case = self.ecosys.carto.carte[i][j]
