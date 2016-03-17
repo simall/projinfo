@@ -14,7 +14,13 @@ from carto import *
 import constantes
 
 class Ecosys():
+	'''
+	Créé un écosystème
+	'''
 	def __init__(self):
+		'''
+		Constructeur
+		'''
 		self.nb_jours = 0
 		self.curr_cycle = 0
 		self.nb_cycles_par_jour = constantes.cyles_par_jour
@@ -26,6 +32,9 @@ class Ecosys():
 		self.carto = ResMap()
 
 	def __str__(self):
+		'''
+		Définit l'affichage de l'écosystème
+		'''
 		string = ''
 		string += 'jour '+str(self.nb_jours)+'\n'
 		for key_espece in self.eco:
@@ -36,6 +45,9 @@ class Ecosys():
 		return string
 
 	def add_animal(self, animal, nom):
+		'''
+		Ajoute un animal à l'écosystème. Le nom est relatif à chaque espèce
+		'''
 		if nom not in self.eco:
 			self.nb_especes += 1
 
@@ -52,9 +64,9 @@ class Ecosys():
 
 	def next_cycle(self):
 		'''
-		réalise toute les actions pour un cycle
-		augmente le nombre de cycles effectués
-		gère les jours
+		Réalise toute les actions pour un cycle
+		Augmente le nombre de cycles effectués
+		Gère les jours
 		'''
 		jour_ecoule = False
 
@@ -76,12 +88,18 @@ class Ecosys():
 				animal.calcVie(jour_ecoule)
 
 	def is_dead(self, animal):
+		'''
+		Renvoit True si l'animal passé en paramêtre est mort, False sinon
+		'''
 		if animal.vie == 0:
 			return True
 		else:
 			return False
 
 	def retirer(self, espece, index):
+		'''
+		Retire un animal de l'écosystème
+		'''
 		self.eco[espece].pop(index)
 		self.nb_animaux[espece] -= 1
 
