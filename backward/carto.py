@@ -2,7 +2,13 @@ import constantes
 from ressources import *
 
 class ResMap():
+	'''
+	Créé une carte des ressources
+	'''
 	def __init__(self):
+		'''
+		Constructeur
+		'''
 		fichier = open(constantes.file_carte)
 		num_line = 0
 
