@@ -6,8 +6,17 @@ from abc import abstractmethod, ABCMeta
 import numpy as np
 
 class Shape(metaclass=ABCMeta):
-
+	'''
+	Classe abstraite qui permet de définir un polygone
+	'''
 	def __init__(self, nbp, list_of_points = None, heading = 0):
+		'''
+		Constructeur
+		Prend comme paramêtres:
+		- un nombre de points nbp
+		- une liste de coordonnées list_of_points (optionnel)
+		- un cap heading (optionnel)
+		'''
 		self.shape = QPolygonF(nbp)
 		for i in range(nbp):
 			if list_of_points is not None:
@@ -20,10 +29,26 @@ class Shape(metaclass=ABCMeta):
 
 	@abstractmethod
 	def get_center(self):
+		'''
+		Méthode abstraite.
+		Retourne les coordonnées du centre de gravité du polygone
+		'''
 		pass
 
 class Triangle(Shape):
+	'''
+	Classe qui hérite de Shape
+	Créé un triangle
+	'''
 	def __init__(self, x_h, y_h, base, hauteur, heading = 0):
+		'''
+		Constructeur
+		Prend en paramêtres:
+		- des coordonnées (x_h,y_h) du sommet représentant la tête de l'animal
+		- la taille de la base
+		- la taille de la hauteur
+		- le cap de la figure (optionnel)
+		'''
 		
 		#(x_h,y_h) le point en "haut" du triangle (fâce à la base)
 		#on détermine le point au milieu de la base du triangle
@@ -78,9 +103,15 @@ class Triangle(Shape):
 		self.head_num = 0
 
 	def head(self):
+		'''
+		Renvoie le sommet du triangle représentant la tête de l'animal
+		'''
 		return self.shape.at(self.head_num)
 
 	def get_center(self):
+		'''
+		Renvoie les coordonnées du centre de gravité du polygone
+		'''
 		p0 = self.shape.at(0)
 		p1 = self.shape.at(1)
 		p2 = self.shape.at(2)
@@ -88,13 +119,29 @@ class Triangle(Shape):
 		return QPointF((p0.x()+p1.x()+p2.x())/3, (p0.y()+p1.y()+p2.y())/3)
 
 class Champ_Vison():
+	'''
+	Créé un champ de vision
+	'''
 	def __init__(self, R, angle, heading):
+		'''
+		Constructeur
+		Prend en paramêtres:
+		- un rayon R
+		- un angle pour définir l'arc de cercle
+		- un cap
+		'''
 		self.rayon = R
 		self.angle = angle
 
 		self.poly = Triangle(1, 1, 1, 1, heading)
 
 	def update(self, anchorPoint, heading):
+		'''
+		Met à jour la position du champ de vision
+		Prends en paramêtres:
+		- les coordonnées du point d'ancrage du champ de vision
+		- le cap heading
+		'''
 		(x_h, y_h) = (anchorPoint.x(), anchorPoint.y())
 
 		self.poly.shape.replace(0, QPointF(x_h,y_h))
