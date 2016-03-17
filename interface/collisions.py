@@ -1,12 +1,21 @@
 #!/usr/bin/python3.4
+# -*- coding: Utf-8 -*-
+
 import random
 import constantes
 from PyQt5.QtCore import Qt, QPointF
 
 def current_case(x_h, y_h):
+    '''
+    Retourne la place (i,j) qu'occupe la ressource sur lequel est le point (x_h, y_h) dans la carte.
+    Il suffit de diviser les coordonnées (x_h,y_h) par la longueur ou la largeur du carré qu'occupe la ressource sur la carte.
+    ''' 
     return (int(y_h//constantes.carre_res[1]), int(x_h//constantes.carre_res[0]))
 
 def check_borders(fig, size_x, size_y):
+    '''
+    Vérifie que le polygone ne sort pas de la carte
+    '''
     for i in range(fig.nbp):
         pt = fig.shape.at(i)
 
@@ -19,6 +28,13 @@ def check_borders(fig, size_x, size_y):
 
 
 def check_rect_coll(fig, ofig):
+    '''
+    Gestion des collisions simplifiée, en utilisant le rectangle qui entoure les polygones
+    Prend en paramêtre:
+    - le polygone que l'on souhaite déplacer fig
+    - la liste de tous les autres polygones
+    Retourne True si collision, False sinon
+    '''
     frect = fig.shape.boundingRect()  # retourne le rectangle qui englobe le polygone
     orect = ofig.shape.boundingRect()
 
@@ -28,6 +44,10 @@ def check_rect_coll(fig, ofig):
         return True
 
 def intersectSegment(A, B, I, P):
+    '''
+    Vérifie s'il y a intersection entre les segments [AB] et [IP]
+    Renvoie 0 si cas limite, 1 si intersection et 0 sinon
+    '''
     D = QPointF(float(B.x() - A.x()), float(B.y() - A.y()))
 
     E = QPointF(float(P.x() - I.x()), float(P.y() - I.y()))
@@ -48,6 +68,10 @@ def intersectSegment(A, B, I, P):
     return 1
 
 def check_glob_coll(fig, ofig):
+    '''
+    Vérifie s'il y a collision entre deux polygones passés en paramêtre
+    Renvoie True si collision, False sinon
+    '''
     I = QPointF(100000.0+random.randint(0,100),100000.0+random.randint(0,100))
 
     for i in range(fig.nbp):
@@ -88,15 +112,12 @@ def check_glob_coll(fig, ofig):
 
     return False
 
-
-
-'''
-Check les collisions, d'abord par rectangle vu que c'est super rapide, puis si il y a collision
-on check avec la méthode par polygones
-Si il y a collision on retourne l'objet collisionné
-'''
 def check_collisions(fig, key_espece, index, eco, scene):
-
+    '''
+    Check les collisions, d'abord par rectangle vu que c'est super rapide, puis si il y a collision
+    on check avec la méthode par polygones
+    Si il y a collision on retourne l'objet collisionné
+    '''
     collisionedObjects = []
     collBorders = check_borders(fig, scene[0], scene[1])
 
