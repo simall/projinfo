@@ -3,13 +3,14 @@
 
 %\documentclass{guide}
 
-\usepackage[utf8]{inputenc}
+\usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc} % Permet de régler l'affichage du \textsc dans \author
 \usepackage[pdftex]{graphicx}
 \usepackage{setspace}
 \usepackage[pdftex, pdfborder={0 0 0}]{hyperref}
 \usepackage{graphicx}
-\usepackage[a4paper,vdivide={*,22cm,4cm}]{geometry}
+\usepackage{geometry}
+\geometry{hmargin=3.5cm,vmargin=4cm}
 %\usepackage{fullpage}
 
 %RequirePackage{diagbox} %diagbox remplace slashbox
@@ -33,7 +34,6 @@
 \RequirePackage{amsmath,amssymb,amsthm,euscript}
 
 \newcommand{\p}{\paragraph}
-\setlength{\parskip}{2ex}
 
 \usepackage{listingsutf8}
 \usepackage{listings}
@@ -96,14 +96,31 @@
 %	breaklines=true,        % sets automatic line breaking
 %	breakatwhitespace=false,    % sets if automatic breaks should only happen at whitespace
 %	escapeinside={\%*}{*)}          % if you want to add a comment within your code
-%}          
+%}
+
+
+%%% Dessin des automates
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+\usetikzlibrary{positioning}
+\tikzset{
+    state/.style={
+           rectangle,
+           rounded corners,
+           draw=black, very thick,
+           minimum height=2em,
+           inner sep=2pt,
+           text centered,
+           },
+}   
 
 \RequirePackage{pageGardeEnsta}
 \RequirePackage[xindy,acronymlists={glo},toc]{glossaries} % glossaires
 \newglossary{glo}{acr1}{acn1}{Glossaire}
 %\newglossary{gloen}{acr2}{acn2}{English glossary}
 
-\title{Simulation d'un écosystème}
+\title{Simulation d'un écosystème \\ Partie 1}
 \author{Simon \textsc{Allenic} \& Pierre \textsc{Erdeven}\\
   \texttt{simon.allenic@ensta-bretagne.org} \\
   \texttt{pierre.erdeven@ensta-bretagne.org}}
@@ -128,7 +145,7 @@
 \newcommand{\reportsubject}{Simulation d'un écosystème} % Sujet
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 \newcommand{\degr}{\ensuremath{^\circ}}
-\setlength{\parskip}{2ex} % Espace entre les paragraphes
+\setlength{\parskip}{1ex} % Espace entre les paragraphes
 
 \hypersetup{
     pdftitle={\reporttitle},%
@@ -142,43 +159,190 @@
 
 \begin{document}
 \theoremstyle{plain}
-\newtheorem{theo}{Théorème}
+\newtheorem{theo}{Théorème}
 \newtheorem{mydef}{Définition}
 
 \clearpage\maketitle
 \thispagestyle{empty}
 \newpage
 
-\section*{Résumé}
-\addcontentsline{toc}{section}{Résumé}
+%\section*{Résumé}
+%\addcontentsline{toc}{section}{Résumé}
 
-\section*{Mots-clés}
-\addcontentsline{toc}{section}{Mots-clés}
+%\section*{Mots-clés}
+%\addcontentsline{toc}{section}{Mots-clés}
 
 \newpage
 
 \tableofcontents
 \newpage
 
-\section*{Introduction}
-\addcontentsline{toc}{section}{Introduction}
+	\section*{Introduction}
+	\addcontentsline{toc}{section}{Introduction}
 
-\paragraph{} essai avec des accents éè!
+\paragraph{} Le programme présenté dans ce rapport simule un écosystème. Les animaux sont divisés en plusieurs espèces telles que les herbivores, les prédateurs et les charognards. Ils évoluent dans un environnement assimilé à une carte. Sur cette dernière se trouve, en plus des animaux, les ressources dont ils ont besoin pour vivre. Toutes les espèces ont besoin d'eau. Les herbivores mangent de l'herbe. Les prédateurs mangent les herbivores. Les charognards mangent les cadavres des animaux morts. Leur vie est régie par jours composés de plusieurs cycles. Chaque jour l'animal vieillit.
 
-\begin{lstlisting}[caption={test}\label{lst:test}]
-def add_animal(self, animal, nom):
-	if nom not in self.eco:
-		self.nb_especes += 1
+\paragraph{} L'intérêt d'un tel programme réside dans l'observation de l'évolution d'une espèce en fonction de paramètres définis au préalable. Comme les charognards mangent les animaux morts, seul l'évolution des prédateurs et des herbivores seront liées. Afin de vérifier la cohérence du programme de simulation avec la réalité, il pourra être comparé aux équations de \textsc{Lotka - Volterra} qui sont désignées aussi sous le terme de \og modèle proie-prédateur \fg.
 
-	Temp = self.eco.get(nom, [])
-	Temp.append(animal)
-	self.eco[nom] = Temp
+\paragraph{} Le présent rapport s'intéresse à la partie algorithmique du programme. Il est divisé en quatre chapitres. Le premier traite des différentes pistes envisagées et des hypothèses réductrices choisies. Le deuxième concerne la description générale du programme. Le troisième montre ses mécanismes fondamentaux. Pour finir, le quatrième présente les différents tests effectués, les perspectives et améliorations à apporter à cette simulation.
 
-	self.nb_animaux[nom] = self.nb_animaux.get(nom, 0) + 1
+\newpage
+
+	\section{Génèse du programme}
+	\label{sec:gen}
+
+		\subsection{Pistes envisagées}
+
+\paragraph{} Pour répondre à la problématique, deux pistes ont été envisagées. La deuxième a rapidement dominé la première par sa clarté et sa facilité de mise en \oe{}uvre.
+
+\paragraph{} La première piste proposée démarrait d'une classe abstraite nommée \textit{Animal} dans laquelle toutes les propriétés communes à tous les animaux étaient définies. Les classes \textit{Herbivore}, \textit{Predateur} et \textit{Charognard} héritaient alors de la classe abstraite \textit{Animal}. Le séquencement de ces sous-classes a posé problème. En effet, les ressources ont été traitées au cas par cas dans les classes représentantes les espèces, et la méthode permettant de changer leur comportement faisait appel à d'autres classes elles aussi définies au cas par cas. Par exemple, une classe nommée \textit{Normal\_Herbivore} héritait de la classe \textit{Animal}, ce qui déjà n'était pas très cohérent, et permettait de définir le comportement normal d'un herbivore. Une autre classe nommée \textit{Faim\_Herbivore} qui héritait aussi de la classe abstraite définissait le comportement d'un herbivore affamé. On se rend alors très vite compte du nombre de classes nécessaires pour coder les différents comportements de tous les animaux. Cette piste n'était pas envisageable du point de vue de l'optimisation du programme.
+
+\paragraph{} La deuxième piste a tout de même été inspirée de la première dans ses premières lignes. En d'autres termes, la super-classe \textit{Animal} a été conservée ainsi que ses trois sous-classes. Le comportement de l'espèce a quand à lui été défini dans une seule méthode ce qui en simplifie grandement son exécution.
+
+		\subsection{Hypothèses réductrices}
+
+\paragraph{} Pour simuler l'écosystème, nous avons émis les hypothèses réductrices suivantes :
+
+\begin{itemize}
+	\item L'eau est une ressource illimitée.
+	\item Tous les végétaux comestibles sont réduits à de l'herbe. 
+	\item L'animal ne dort pas.
+	\item La reproduction n'est pas prise en compte.
+	\item Seuls deux facteurs agissent sur la vie de l'animal : la vieillesse et le manque d'eau ou de nourriture. La maladie n'intervient pas.
+	\item Lors de l'attaque d'un prédateur l'herbivore tentera de fuir. S'il n'y parvient pas, il sera forcément tué. La blessure n'existe pas.
+	\item Les prédateurs ne s'entretuent pas pour déterminer le dominant. Il n'y pas de hiérarchie dans les espèces.
+	\item Les animaux morts ne disparaissent pas tant qu'ils n'ont pas été mangés.
+\end{itemize}
+
+
+	\section{Description générale}
+	\label{sec:des}
+
+\paragraph{} Avant de décrire chacune des classes du programme, attardons nous sur son fonctionnement général. Pour une meilleure lisibilité le programme est divisé en sept fichiers. La classe qui pilote l'écosystème est \textit{Ecosys}. C'est elle qui contient le \textit{main} et qui permet de gérer le nombre des animaux présents sur la carte. Elle commande le nombre de cycles et de jours. En fin de journée, elle vérifie si les quotas en nourriture et en eau des animaux sont atteints. Elle fait appel à la méthode \textit{calcVie} de la classe \textit{Animal} qui calcule la perte de vie de l'animal. L'action de ce dernier (déplacements, boire, manger,...) sera effectué à chaque cycle. Les animaux sont définis par héritage de la classe \textit{Animal}. La carte est créée dans un fichier texte puis chargée dans la classe \textit{ResMap}. Chaque ressource possède un identifiant permettant de faire le lien entre ce fichier texte et la classe abstraite \textit{Ressource} d'où elles sont gérées. Pour finir, la représentation géométrique des animaux et de leur champ de vision est générée dans le fichier \texttt{object.py}. La connaissance de ces paramètres permet de développer la gestion des collisions avec les autres animaux, les bords de la carte ou encore les différentes ressources.
+
+\paragraph{} Le diagramme de classe de la Figure~\ref{fig:diag} entre un peu plus dans le détail de l'héritage et du polymorphisme des différentes classes du programme. Par la suite, nous ne détaillerons pas toutes les classes et méthodes le composant mais seulement les fondamentales.
+
+
+
+	\section{Mécanismes fondamentaux}
+	\label{sec:mec}
+
+		\subsection{Classe abstraite \textit{Animal}}
 		
-# augmente le nombre d'animaux de l'espece correspondante!
-# utf8 gère très mal les accents ÂûçéèàÉÈù
-\end{lstlisting}
+\paragraph{} Cette classe contient les variables communes à tous les animaux. Celles-ci sont stockées sous forme de variable de classe. Les méthodes communes aux animaux y sont définies. On y trouve par exemple les méthodes \textit{manger}, \textit{boire}, \textit{translater} ou \textit{tourner}. Le comportement propre à chaque espèce se retrouvera dans la méthode \textit{next\_state} qui est elle-même définie dans les sous-classes de \textit{Animal}.
+
+			\subsubsection{Méthode \textit{calcVie}}
+			
+\paragraph{} La méthode \textit{calcVie} gère la réduction de la vie de l'animal. Elle est appelée par la méthode \textit{next\_cycle} de la classe \textit{Ecosys} lorsqu'un jour s'est écoulé. C'est la raison pour laquelle elle prend en paramètre un booléen indiquant si oui ou non le jour est terminé. Elle retire alors une unité de vie à la variable \textit{vie} pour simuler la vieillesse de l'animal. Elle lui retire également autant d'unité de vie qu'il manque entre l'eau qu'il a bu dans la journée et son quota nécessaire à sa survie. Cette opération traduit simplement le fait que si un animal ne boit pas, au bout d'un certain temps qui dépend de son âge, celui-ci meurt. Le même raisonnement est appliqué pour la nourriture.
+
+			\subsubsection{Méthode \textit{tryTrans}}
+
+\paragraph{} La méthode \textit{tryTrans} permet de vérifier si l'animal peut avancer ou reculer. Elle utilise pour cela les méthodes programmées dans le fichier \texttt{collisions.py} qui vérifient les collisions avec les bords de la carte et les autres polygones présents. Elle est appelée dans la méthode \textit{translater}. Le principe est d'utiliser une figure virtuelle de même forme que celle de l'espèce considérée. Il suffit ensuite de vérifier s'il y a collision avec des éléments de la carte lors de la translation de ce polygone. La méthode \textit{tryRotate} est basée sur la même idée.
+
+		\subsection{Classe \textit{Herbivore}}
+		
+\paragraph{} La classe \textit{Herbivore} est encore en cours d'élaboration. Dans le constructeur, on y définit les caractéristiques de l'espèce. La méthode \textit{next\_state} a pour objectif de suivre le comportement défini par l'automate de la figure~\ref{fig:her}.
+
+\begin{figure}[h!]
+\centering		
+\begin{tikzpicture}[->,>=stealth']
+
+ % STATE Suivre les autres
+\node[state] (Suivre les autres) 
+{\begin{tabular}{c} % création du contenu
+\textbf{Suivre les autres} \\
+(0)
+\end{tabular}};
+
+% STATE Chercher à manger
+\node[state,     
+node distance=5cm,   
+right of=Suivre les autres,    
+yshift=-3cm,
+xshift=-1cm] (Chercher à manger) 
+{\begin{tabular}{c}
+\textbf{Chercher}\\
+\textbf{à}\\
+\textbf{manger}\\
+(2)
+\end{tabular}};
+
+% STATE Manger
+\node[state,
+below of=Chercher à manger,
+node distance=5cm,
+xshift=-0.5cm] (Manger) 
+{\begin{tabular}{c}
+\textbf{Manger}\\
+(3)
+\end{tabular}};
+
+% STATE Chercher à boire
+\node[state,
+left of=Suivre les autres,
+node distance=5cm,
+yshift=-3cm,
+xshift=1.5cm] (Chercher à boire) 
+{\begin{tabular}{c}
+\textbf{Chercher}\\
+\textbf{à}\\
+\textbf{boire}\\
+(4)
+\end{tabular}};
+ 
+% STATE Boire
+\node[state,
+below of=Chercher à boire,
+node distance=5cm,
+xshift=0.5cm] (Boire) 
+{\begin{tabular}{c}
+\textbf{Boire}\\
+(5)
+\end{tabular}};
+
+% STATE Fuir
+\node[state,
+below of=Suivre les autres,
+node distance=3cm,
+yshift=-2cm] (Fuir) 
+{\begin{tabular}{c}
+\textbf{Fuir}\\
+(1)
+\end{tabular}};
+ 
+
+\path 
+(Suivre les autres) edge node[right] {faim} (Chercher à manger)
+(Chercher à manger) edge node[right]{trouvé} (Manger)
+(Manger) edge[bend right=85] node[right,yshift=5em,xshift=-2em] {rassasié} (Suivre les autres)
+ 
+(Suivre les autres) edge[bend left=10] node[right] {détecté} (Fuir)
+(Fuir) edge[bend left=10]  node[left] {échappé} (Suivre les autres)
+ 
+ 
+(Suivre les autres) edge node[left] {soif} (Chercher à boire)
+(Chercher à boire) edge node[left] {trouvé} (Boire)
+(Boire) edge[bend left=85] node[left,yshift=5em,xshift=2em]{hydraté} (Suivre les autres)
+ 
+(Chercher à boire) edge node[below,xshift=-1em]{détecté} (Fuir)
+(Chercher à manger) edge node[below,xshift=1em]{détecté} (Fuir)
+(Boire) edge node[right]{détecté} (Fuir)
+(Manger) edge node[left]{détecté} (Fuir)
+;
+
+\end{tikzpicture}
+\caption{Diagramme d'état d'un herbivore}
+\label{fig:her}
+\end{figure}
+
+		\subsection{Ressources}
+		
+		\subsection{Collisions}
+	
+		\subsection{Classe \textit{Ecosys}}
+		
+	\section{Tests, perspectives et améliorations}
+	\label{sec:tes}
 
 
 \end{document}
