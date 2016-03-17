@@ -207,11 +207,10 @@
 	\item L'eau est une ressource illimitée.
 	\item Tous les végétaux comestibles sont réduits à de l'herbe. 
 	\item L'animal ne dort pas.
-	\item La reproduction n'est pas prise en compte.
+	\item La reproduction n'est pas prise en compte pour l'instant.
 	\item Seuls deux facteurs agissent sur la vie de l'animal : la vieillesse et le manque d'eau ou de nourriture. La maladie n'intervient pas.
 	\item Lors de l'attaque d'un prédateur l'herbivore tentera de fuir. S'il n'y parvient pas, il sera forcément tué. La blessure n'existe pas.
 	\item Les prédateurs ne s'entretuent pas pour déterminer le dominant. Il n'y pas de hiérarchie dans les espèces.
-	\item Les animaux morts ne disparaissent pas tant qu'ils n'ont pas été mangés.
 \end{itemize}
 
 
@@ -222,14 +221,32 @@
 
 \paragraph{} Le diagramme de classe de la Figure~\ref{fig:diag} entre un peu plus dans le détail de l'héritage et du polymorphisme des différentes classes du programme. Par la suite, nous ne détaillerons pas toutes les classes et méthodes le composant mais seulement les fondamentales.
 
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{diag_eco}
+\caption{Diagramme de classe}
+\label{fig:diag}
+\end{figure}
+
 
 
 	\section{Mécanismes fondamentaux}
 	\label{sec:mec}
+	
+		\subsection{Classe \textit{Ecosys}}
+		
+\paragraph{} Cette classe est le noyau du programme. Elle gère les animaux et leur vie. Elle contient des méthodes qui ajoutent ou retirent un animal et vérifient si celui-ci est mort.
+
+			\subsubsection{Méthode \textit{add\_animal}}
+
+\paragraph{} La méthode \textit{add\_animal} permet d'ajouter un animal dans l'écosystème. Celui-ci est ajoutée dans une liste correspondant à son espèce. L'écosystème est organisé par un dictionnaire dont les clés sont les espèces et les valeurs sont leurs animaux.
+
+			\subsubsection{Méthode \textit{next\_cycle}}
+
+\paragraph{} La méthode \textit{next\_cycle} gère la vie de l'animal. Tous les animaux de l'écosystème évolueront en même temps, rythmés par des cycles. À la fin de la journée, la méthode remet à 0 les réserves en nourriture et en eau de l'animal.
 
 		\subsection{Classe abstraite \textit{Animal}}
 		
-\paragraph{} Cette classe contient les variables communes à tous les animaux. Celles-ci sont stockées sous forme de variable de classe. Les méthodes communes aux animaux y sont définies. On y trouve par exemple les méthodes \textit{manger}, \textit{boire}, \textit{translater} ou \textit{tourner}. Le comportement propre à chaque espèce se retrouvera dans la méthode \textit{next\_state} qui est elle-même définie dans les sous-classes de \textit{Animal}.
+\paragraph{} Cette classe contient les variables communes à tous les animaux. Celles-ci sont stockées sous forme de variable de classe. Les méthodes communes aux animaux y sont définies. On y trouve par exemple les méthodes \textit{manger}, \textit{boire}, \textit{translater} et \textit{tourner}. Le comportement propre à chaque espèce se retrouvera dans la méthode \textit{next\_state} qui est elle-même définie dans les sous-classes de \textit{Animal}.
 
 			\subsubsection{Méthode \textit{calcVie}}
 			
@@ -379,17 +396,30 @@ right of=Cadavre] (Terre ou Herbe 2)
 \end{figure}
 
 		\subsection{Collisions}
-	
-		\subsection{Classe \textit{Ecosys}}
 		
-\paragraph{} Cette classe est le noyau du programme. Elle gère les animaux et leur vie.
-
-			\subsubsection{Méthode \textit{add\_animal}}
-
-\paragraph{} La méthode \textit{add\_animal} permet d'ajouter un animal dans l'écosystème. 
 		
 	\section{Tests, perspectives et améliorations}
 	\label{sec:tes}
+	
+\paragraph{} Le test est réalisé dans le fichier \texttt{ecosys.py}. Il ajoute deux herbivores et effectue un cycle. Son exécution retourne :
+
+\begin{lstlisting}
+jour 0
+espèce mouton (2)
+	80 10
+	80 10
+\end{lstlisting}
+
+Le nombre de gauche représente sa vie et celui de droite sa réserve de nourriture. On remarque que, au bout d'un cycle, les deux moutons ont bien mangé 10 unités d'herbe correspondant à une bouchée.
+
+\paragraph{} La partie algorithmique n'est pas encore terminée à l'heure actuelle. Les perspectives et améliorations seraient donc nombreuses à énumérer. Néanmoins, à court terme, l'objectif est d'étoffer la classe \textit{Herbivore} en créant les comportements plus avancés tels que la fuite ou encore la détection des prédateurs. À moyen terme, la création des deux autres classes \textit{Predateur} et \textit{Charognard} deviendra importante. La gestion de la ressource \textit{Cadavre}, la reproduction et la maturité des animaux sera développée à ce moment là également. Pour finir, sur le long terme, le développement de l'interface graphique afin de visualiser l'évolution de l'écosystème.
+
+\newpage
+	\section*{Conclusion}
+	\addcontentsline{toc}{section}{Conclusion}
+
+\paragraph{} 
+
 
 
 \end{document}
