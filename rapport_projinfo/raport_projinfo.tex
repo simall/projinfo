@@ -10,6 +10,7 @@
 \usepackage[pdftex, pdfborder={0 0 0}]{hyperref}
 \usepackage{graphicx}
 \usepackage{geometry}
+\usepackage{amsmath}
 \geometry{hmargin=3.5cm,vmargin=4cm}
 %\usepackage{fullpage}
 
@@ -395,8 +396,44 @@ right of=Cadavre] (Terre ou Herbe 2)
 \label{fig:rep}
 \end{figure}
 
-		\subsection{Collisions}
-		
+		\subsection{La représentation en mémoire de l'écosystème}
+Deux grands types de représentation sont utilisés dans le programme. Les ressources sont représentées par une case au sein d'une matrice tandis que les animaux sont représentés par un polygone, c'est à dire une liste de coordonnées.
+
+Les ressources (\textit{Eau} et \textit{Herbe}) ainsi que \textit{Terre} sont toutes appelées et stockées au sein de la classe \textit{ResMap}, dans un tableau à deux dimensions. La carte des ressources est chargée depuis un fichier dans le constructeur de la classe \textit{ResMap}. Dans ce fichier, on a les équivalences suivantes:
+\medskip
+\begin{itemize}
+	\item 0 = Terre
+	\item 1 = Herbe
+	\item 2 = Eau
+\end{itemize}
+\medskip
+
+Lors de la création d'un Herbivore, 2 polygones sont créés. Un premier qui représente l'animal et un deuxième qui représente son champ de vision. Ces polygones sont créés en faisant appel à la classe \textit{Triangle} qui  hérite de la classe abstraite \textit{Shape}. Le champ de vision est attaché au polygone représentant \textit{Herbivore}, il se déplace de la même manière que lui. La mise à jour de la position du champ de vision est réalisée par la méthode \textit{update} de la classe \textit{Champ\_Vision}. 
+
+Un polygone n'est qu'une simple liste de coordonnées, il suffit donc d'effectuer le produit de chaque vecteur de coordonnées et d'une matrice de translation ou de rotation pour faire bouger le triangle. La principale difficulté se situe au niveau de la gestion des collisions. Deux polygones ne peuvent pas se chevaucher et un herbivore ne peut pas marcher dans l'eau par exemple. Pour éviter de lourds calculs inutiles plusieurs niveaux de gestion de collisions ont été implémentés. Les fonctions détaillées ci-dessous sont toutes issues du fichier \texttt{collisions.py}.
+
+
+Pour savoir sur quelle ressource se situe un point aux coordonnées quelconques, il suffit de connaître la place occupée par la ressource dans la matrice \textit{carte} de la classe \textit{Resmap}.
+
+\begin{lstlisting}[caption={test}\label{lst:test}]
+def current_case(x_h, y_h):
+	'''
+	Retourne la place (i,j) qu'occupe la ressource sur lequel est le point (x_h, y_h) dans la carte.
+	Il suffit de diviser les coordonnées (x_h,y_h) par la longueur ou la largeur du carré qu'occupe la ressource sur la carte.
+	''' 
+    return (int(y_h//constantes.carre_res[1]), int(x_h//constantes.carre_res[0]))
+\end{lstlisting}
+
+La gestion de collisions entre polygones (donc entre animaux) est plus complexe et se fait en deux temps. D'abord il y a une première vérification avec la fonction \textit{check\_rect\_coll} qui prend en paramètre le polygone que l'on cherche à déplacer et la liste des autres polygones présents sur la carte. Pour chacun des polygones, la fonction extrait le meilleur carré qui l'englobe puis teste les collisions entre les carrés. En effet, tester des collisions entre carrés est très peu calculatoire.
+
+S'il y a collision entre deux carrés, et seulement dans ce cas, la fonction\\ \textit{check\_glob\_coll} est appelée pour tester très précisément la collision entre les deux triangles. La méthode est simple. Il faut placer un point I aléatoirement en dehors de l'écran. Ensuite on définit un rôle pour chacun des deux polygones. L'un des deux joue le rôle du polygone passif et l'autre le rôle du polygone actif. Pour chaque point $P$ du polygone actif, on regarde ensuite combien de segments $[AB]$ du polygone passif sont traversés par le segment $[IP]$. Si ce nombre est impair, il y a collision, s'il est pair il n'y pas collision. On répète ensuite l'opération en inversant les rôles des polygones actif et passif. 
+
+La fonction \textit{intersectSegment} se charge de tester s'il y a intersection entre deux segments $[AB]$ et $[IP]$. Pour cela, la fonction vérifie dans un premier temps si l'on ne se situe pas dans un cas limite, en calculant $D = det(\overrightarrow{AB}, \overrightarrow{IP})$. Si le déterminant vaut 0, alors les deux droites peuvent être parallèles ou confondues, on relance donc la fonction avec un autre point I. Sinon, on écrit les équations paramétriques des deux segments:
+\[J = A + u\overrightarrow{AB}\]
+\[K = I + t\overrightarrow{IP}\]
+
+On résout le système pour obtenir $t$ et $u$. Si les deux sont compris entre 0 inclus et 1 exclu, alors il y a bien intersection entre les deux segments.
+
 		
 	\section{Tests, perspectives et améliorations}
 	\label{sec:tes}
@@ -413,6 +450,8 @@ espèce mouton (2)
 Le nombre de gauche représente sa vie et celui de droite sa réserve de nourriture. On remarque que, au bout d'un cycle, les deux moutons ont bien mangé 10 unités d'herbe correspondant à une bouchée.
 
 \paragraph{} La partie algorithmique n'est pas encore terminée à l'heure actuelle. Les perspectives et améliorations seraient donc nombreuses à énumérer. Néanmoins, à court terme, l'objectif est d'étoffer la classe \textit{Herbivore} en créant les comportements plus avancés tels que la fuite ou encore la détection des prédateurs. À moyen terme, la création des deux autres classes \textit{Predateur} et \textit{Charognard} deviendra importante. La gestion de la ressource \textit{Cadavre}, la reproduction et la maturité des animaux sera développée à ce moment là également. Pour finir, sur le long terme, le développement de l'interface graphique afin de visualiser l'évolution de l'écosystème.
+
+Dans notre cas, il est difficile de décorréler complètement la partie graphique de la partie algorithmique. En effet, gérer un système de collisions sans développer une interface graphique pour tester le bon déroulement du programme n'est pas une chose aisée. Pour accéder à un test graphique du système de collisions, il suffit d'exécuter le fichier \texttt{window.py}. Il est alors possible de contrôler un herbivore au clavier et de le faire se déplacer sur la carte.
 
 \newpage
 	\section*{Conclusion}
