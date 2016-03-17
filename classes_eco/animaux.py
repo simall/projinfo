@@ -18,9 +18,9 @@ from collisions import *
 
 #classe abstraite mère
 class Animal(metaclass=ABCMeta):
-	"""
+	'''
 	Classe abstraite pour les caractéristiques communes.
-	"""
+	'''
 	__vie = 0
 	rapidite = 0
 
@@ -54,7 +54,7 @@ class Animal(metaclass=ABCMeta):
 
 	# Création des caractéristiques communes :
 	def calcVie(self, jour_ecoule):
-		"""
+		'''
 		La méthode gère la perte de vie de l'animal.
 		Deux facteurs sont pris en compte:
 		- Le vieillissement (1 point de vie en moins chaque jour)
@@ -64,7 +64,7 @@ class Animal(metaclass=ABCMeta):
 
 		La méthode prend en paramètre un booleen jour_ecoule qui indique que l'animal
 		doit vieillir.
-		"""
+		'''
 
 		if jour_ecoule:
 			#le vieillissement
@@ -75,18 +75,38 @@ class Animal(metaclass=ABCMeta):
 			self.vie -= (self.quota_nourriture - self.nourriture)
 
 	def manger(self, ressource):
+		'''
+		Nourrit l'animal avec la ressource passée en paramètre
+		'''
 		self.nourriture += ressource.reduction()
 
 	def boire(self, ressource):
+		'''
+		Hydrate l'animal avec la ressource passée en paramètre
+		'''
 		self.eau += ressource.reduction()
 
 	def tourner(self, ressources, eco, angle):
+		'''
+		Fait tourner l'animal
+		Prend en paramètres:
+		- la carte des ressources
+		- l'ensemble des animaux de l'écosystème
+		- un angle de rotation
+		'''
 		(collisionedObjects, collBorders) = self.tryRotate(ressources, eco, angle)
 		self.vision.update(self.poly.head(), self.poly.heading)
 
 		return (collisionedObjects, collBorders)
 
 	def translater(self, ressources, eco, sens):
+		'''
+		Fait avancer/tourner l'animal
+		Prend en paramètres:
+		- la carte des ressources
+		- l'ensemble des animaux de l'écosystème
+		- un sens de translation
+		'''
 		for i in range(self.rapidite):
 			(collisionedObjects, collBorders) = self.tryTrans(ressources, eco, sens)
 			self.vision.update(self.poly.head(), self.poly.heading)
@@ -95,6 +115,13 @@ class Animal(metaclass=ABCMeta):
 
 
 	def tryTrans(self, ressources, eco, sens):
+		'''
+		Créé une figure virtuelle et vérifie que l'animal peut bouger
+		Prend en paramètres:
+		- la carte des ressources
+		- l'ensemble des animaux de l'écosystème
+		- un angle de sens de translation
+		'''
 		nbp = self.poly.nbp
 		virtual_fig = Triangle(1,1,1,1)
 
@@ -127,6 +154,13 @@ class Animal(metaclass=ABCMeta):
 		return (collisionedObjects, collBorders)
 
 	def tryRotate(self, ressources, eco, theta):
+		'''
+		Créé une figure virtuelle et vérifie que l'animal peut bouger
+		Prend en paramètres:
+		- la carte des ressources
+		- l'ensemble des animaux de l'écosystème
+		- un angle de rotation
+		'''
 		nbp = self.poly.nbp
 		virtual_fig = Triangle(1,1,1,1)
 
@@ -161,11 +195,21 @@ class Animal(metaclass=ABCMeta):
 
 	@abstractmethod
 	def next_state(self, current_case, list_vision, list_touch):
+		'''
+		Méthode abstraite
+		Détermine le comportement de l'animal
+		'''
 		pass
 		
 
 class Herbivore(Animal):
+	'''
+	Créé un herbivore
+	'''
 	def __init__(self):
+		'''
+		Constructeur
+		'''
 		self.vie = 80
 		self.rapidite = 4
 
