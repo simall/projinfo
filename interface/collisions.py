@@ -3,14 +3,83 @@
 
 import random
 import constantes
+import numpy as np
+from math import atan2
 from PyQt5.QtCore import Qt, QPointF
+
+def sens_trigo(x):
+    if x < 0:
+        return (2*np.pi + x)
+    else:
+        return x
 
 def current_case(x_h, y_h):
     '''
     Retourne la place (i,j) qu'occupe la ressource sur lequel est le point (x_h, y_h) dans la carte.
     Il suffit de diviser les coordonnées (x_h,y_h) par la longueur ou la largeur du carré qu'occupe la ressource sur la carte.
-    ''' 
+    '''
     return (int(y_h//constantes.carre_res[1]), int(x_h//constantes.carre_res[0]))
+
+def collision_vision_cases(alpha, heading, rayon, carte, current_case, head):
+    cases_vues = []
+    overflow = False
+
+    (k,l) = (current_case[0], current_case[1])
+
+    nb_cases = rayon//constantes.carre_res[0]
+
+    #détermination des sommets du carré entourant l'animal
+    borders = []
+    borders.append((max(k-nb_cases, 0),min(l+nb_cases, constantes.nb_carres_largeur-1)))#sommet (1,1)
+    borders.append((max(k-nb_cases, 0),max(l-nb_cases, 0)))#sommet (-1,1)
+    borders.append((min(k+nb_cases, constantes.nb_carres_hauteur-1),max(l-nb_cases, 0)))#sommet (-1,-1)
+
+    #on parcourt toutes les cases du carré et on détermine si elles sont dans le champ de vision
+    for i in range(borders[1][0], borders[2][0]+1):
+        for j in range(borders[1][1], borders[0][1]+1):
+            (x,y) = ((j+1/2)*constantes.carre_res[0], (i+1/2)*constantes.carre_res[0])
+
+            if(np.sqrt((head.x()-x)**2 + (head.y()-y)**2) <= rayon):
+                angle = sens_trigo(atan2(y-head.y(), x-head.x()))
+                first_angle = sens_trigo(heading*np.pi/180 - alpha)
+                sec_angle = np.mod(first_angle + 2*alpha, 2*np.pi)
+
+                if((first_angle + 2*alpha) >= 2*np.pi):
+                    overflow = True
+
+                if (overflow and (angle > first_angle or angle < sec_angle)) or (angle > first_angle and angle < sec_angle):
+                    cases_vues.append(carte[i][j])
+
+    return cases_vues
+
+def collision_vision_animaux(eco, espece, index):
+    animaux_vus = []
+    overflow = False
+
+    animal_ref = eco[espece][index]
+    head = animal_ref.poly.shape.at(0)
+    head.setY(-head.y()+constantes.carre_res[1]*constantes.nb_carres_hauteur)
+    alpha = animal_ref.vision.angle
+
+    for key_espece in eco:
+        for i in range(len(eco[key_espece])):
+            animal = eco[key_espece][i]
+            if key_espece != espece or i != index:
+                center = animal.poly.get_center()
+                center.setY(-center.y()+constantes.carre_res[1]*constantes.nb_carres_hauteur)
+
+                if (np.sqrt((head.x()-center.x())**2 + (head.y()-center.y())**2) <= animal_ref.vision.rayon):
+                    angle = sens_trigo(atan2(center.y()-head.y(), center.x()-head.x()))
+                    first_angle = sens_trigo(animal_ref.poly.heading*np.pi/180 - alpha)
+                    sec_angle = np.mod(first_angle + 2*alpha, 2*np.pi)
+
+                    if((first_angle + 2*alpha) >= 2*np.pi):
+                        overflow = True
+
+                    if (overflow and (angle > first_angle or angle < sec_angle)) or (angle > first_angle and angle < sec_angle):
+                        animaux_vus.append(animal)
+
+    return animaux_vus
 
 def check_borders(fig, size_x, size_y):
     '''
