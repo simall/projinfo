@@ -12,15 +12,22 @@ from animaux import *
 from ressources import *
 from carto import *
 import constantes
+import time
 
-class Ecosys():
+from PyQt5.QtCore import QObject, pyqtSignal
+
+class Ecosys(QObject):
 	'''
 	Créé un écosystème
 	'''
+	signal = pyqtSignal()
+
 	def __init__(self):
 		'''
 		Constructeur
 		'''
+		super().__init__()
+
 		self.nb_jours = 0
 		self.curr_cycle = 0
 		self.nb_cycles_par_jour = constantes.cyles_par_jour
@@ -69,23 +76,41 @@ class Ecosys():
 		Gère les jours
 		'''
 		jour_ecoule = False
+		(height, width) = (constantes.nb_carres_hauteur*constantes.carre_res[0], constantes.nb_carres_largeur*constantes.carre_res[1])
 
 		#pour tous les animaux de l'écosystème, action !
 		self.curr_cycle = (self.curr_cycle+1)%self.nb_cycles_par_jour
 		if self.curr_cycle == 0:
 			self.nb_jours += 1
 			jour_ecoule = True
-			animal.nourriture = 0
-			animal.eau = 0
 
 		#fait tous ce qu'il y a à faire sur les animaux à la fin de la journée
 		for espece in self.eco:
 			for animal in self.eco[espece]:
-				#appel de la fonction de collision vision
-				#appel de la fonction de collision touch
-				#appel de animal.next_state(vision, touch)
-				animal.manger(self.carto.carte[44][27])#pour l'exemple
+				if jour_ecoule:
+					animal.nourriture = 0
+					animal.eau = 0
+
+				#appel de la current case
+				head = animal.poly.head()
+				curr_case = current_case(head.x(), head.y())
+				#appel de la fonction de collision vision cases
+				coll_vision_cases = collision_vision_cases(animal.vision.angle, animal.poly.heading, animal.vision.rayon, self.carto.carte, curr_case, head)
+				#appel de la fonction de collision vision animaux
+				coll_vision_animaux = collision_vision_animaux(self.eco, animal.espece, animal.index)
+				#appel de la fonction de collisions entre animaux
+				coll_touch = (check_collisions(animal.poly, animal.espece, animal.index, self.eco, (height, width)))[0]
+				#appel de animal.next_state
+				animal.next_state(self.carto, self.eco, curr_case, coll_vision_cases, coll_vision_animaux, coll_touch)
+
+				animal.vision.update(animal.poly.head(), animal.poly.heading)
+				self.signal.emit()
+
 				animal.calcVie(jour_ecoule)
+
+		self.carto.check_regen_state()
+		if jour_ecoule:
+			print(self.nb_jours)
 
 	def is_dead(self, animal):
 		'''
@@ -105,8 +130,8 @@ class Ecosys():
 
 if __name__ == '__main__':
 	ecosys = Ecosys()
-	ecosys.add_animal(Herbivore(), 'bulbi')
-	ecosys.add_animal(Herbivore(), 'bulbi')
+	ecosys.add_animal(Herbivore(), 'h')
+	ecosys.add_animal(Herbivore(), 'h')
 
 	ecosys.next_cycle()
 

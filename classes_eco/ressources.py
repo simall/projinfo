@@ -14,7 +14,7 @@ class Ressource(metaclass=ABCMeta):
 	'''
 	cycle_vie = 0
 	__quantite = 0
-	id_res = ''
+	id_res = None
 	passable = True
 
 	@abstractmethod
@@ -47,8 +47,8 @@ class Herbe(Ressource):
 		- la position de la ressource sur la carte
 		'''
 		self.cycle_vie = constantes.cyles_par_jour
-		self.quantite = 100
-		self.id_res = 1
+		self.quantite = 50
+		self.id_res = 1#vaut -1 si l'herbe est épuisée
 
 		self.rect = QRectF(pos[0], pos[1], constantes.carre_res[0], constantes.carre_res[1])
 

@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.4
+#!/usr/bin/python3.4
 # -*- coding: Utf-8 -*-
 
 import sys
@@ -14,6 +14,7 @@ import random
 import numpy as np
 from objects import *
 from collisions import *
+from fsm import *
 
 
 #classe abstraite mère
@@ -39,7 +40,7 @@ class Animal(metaclass=ABCMeta):
 	eau = 0
 	nourriture = 0
 
-	current_state = 0#comportement de l'animal
+	comportement = None
 
 	@property
 	def vie(self):
@@ -194,7 +195,7 @@ class Animal(metaclass=ABCMeta):
 		return (collisionedObjects, collBorders)
 
 	@abstractmethod
-	def next_state(self, current_case, list_vision, list_touch):
+	def next_state(self, current_case, list_vision_cases, list_vision_eco):
 		'''
 		Méthode abstraite
 		Détermine le comportement de l'animal
@@ -214,18 +215,60 @@ class Herbivore(Animal):
 		self.rapidite = 4
 
 		self.pas = 1
-		self.poly = Triangle(random.randint(10,300), random.randint(10,300), 8, 15, 90)
-		self.vision = Champ_Vison(40, np.pi/8, self.poly.heading)
+		self.poly = Triangle(random.randint(10,300), random.randint(10,300), 4, 6, 90)
+		self.vision = Champ_Vison(60, np.pi/8, self.poly.heading)
 
-		self.current_state = 0
+		self.quota_eau = 50
+		self.quota_nourriture = 100
 
-	def next_state(self, current_case, list_vision, list_touch):
-		'''
-		Comportement de Herbivore
-		0: suivre les autres
-		1: fuire
-		2: chercher à manger
-		3: manger
-		4: chercher à boire
-		5: boire
-		'''
+		self.eau = 50
+		self.nourriture = 100
+
+		self.comportement = FSM()
+
+		#définition du comportement
+		self.comportement.add_state("suivre")
+		self.comportement.add_state("chercher_nourriture")
+		self.comportement.add_state("manger")
+		self.comportement.add_state("chercher_eau")
+		self.comportement.add_state("boire")
+		self.comportement.add_state("fuir")
+
+		self.comportement.add_event("faim")
+		self.comportement.add_event("nourriture_trouvee")
+		self.comportement.add_event("retour_normal")
+		self.comportement.add_event("soif")
+		self.comportement.add_event("eau_trouvee")
+		self.comportement.add_event("danger")
+
+		self.comportement.add_transition("suivre", "retour_normal", "suivre", doFollow)
+		self.comportement.add_transition("suivre", "faim", "chercher_nourriture", doLookFood)
+		self.comportement.add_transition("suivre", "soif", "chercher_eau", doLookWater)
+		self.comportement.add_transition("suivre", "danger", "fuir", doEscape)
+
+		self.comportement.add_transition("chercher_nourriture", "faim", "chercher_nourriture", doLookFood)
+		self.comportement.add_transition("chercher_nourriture", "nourriture_trouvee", "manger", doEat)
+		self.comportement.add_transition("chercher_nourriture", "danger", "fuir", doEscape)
+
+		self.comportement.add_transition("manger", "nourriture_trouvee", "manger", doEat)
+		self.comportement.add_transition("manger", "retour_normal", "suivre", doFollow)
+		self.comportement.add_transition("manger", "danger", "fuir", doEscape)
+		self.comportement.add_transition("manger", "faim", "chercher_nourriture", doLookFood)
+
+		self.comportement.add_transition("chercher_eau", "soif", "chercher_eau", doLookWater)
+		self.comportement.add_transition("chercher_eau", "eau_trouvee", "boire", doDrink)
+		self.comportement.add_transition("chercher_eau", "danger", "fuir", doEscape)
+
+		self.comportement.add_transition("boire", "eau_trouvee", "boire", doDrink)
+		self.comportement.add_transition("boire", "retour_normal", "suivre", doFollow)
+		self.comportement.add_transition("boire", "danger", "fuir", doEscape)
+
+		self.comportement.add_transition("fuir", "danger", "fuir", doEscape)
+		self.comportement.add_transition("fuir", "retour_normal", "suivre", doFollow)
+
+		self.comportement.currentState = "suivre"
+		self.comportement.currentEvent = "retour_normal"
+
+	def next_state(self, ressources, eco, current_case, list_vision_cases, list_vision_eco, list_touch_cases):
+		event = (self.comportement.run())(self, ressources, eco, current_case, list_vision_cases, list_vision_eco, list_touch_cases)
+		self.comportement.currentEvent = event

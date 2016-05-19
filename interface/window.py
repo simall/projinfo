@@ -37,16 +37,22 @@ class Window(QWidget):
         '''
 
         self.ecosys = Ecosys()
+        self.ecosys.signal.connect(self.repaint)
 
-        self.ecosys.add_animal(Herbivore(), "bulbi")#pour les tests (temporaire)
-        self.ecosys.eco["bulbi"][0].vision.update(self.ecosys.eco["bulbi"][0].poly.head(), self.ecosys.eco["bulbi"][0].poly.heading)
+        # self.ecosys.add_animal(Herbivore(), 'h')#pour les tests (temporaire)
+        # self.ecosys.eco['h'][0].vision.update(self.ecosys.eco['h'][0].poly.head(), self.ecosys.eco['h'][0].poly.heading)
 
-        self.ecosys.add_animal(Herbivore(), "bulbi")
+        # self.ecosys.add_animal(Herbivore(), 'h')
+        # self.ecosys.eco['h'][1].vision.update(self.ecosys.eco['h'][1].poly.head(), self.ecosys.eco['h'][1].poly.heading)
+
+        for i in range(20):
+            self.ecosys.add_animal(Herbivore(), 'h')
+            self.ecosys.eco['h'][i].vision.update(self.ecosys.eco['h'][i].poly.head(), self.ecosys.eco['h'][i].poly.heading)
+
 
         self.resize(constantes.nb_carres_largeur*constantes.carre_res[0], constantes.nb_carres_hauteur*constantes.carre_res[1])
         self.center()
         self.setWindowTitle('Simulateur Ecosys')
-        self.show()
 
     def center(self):
         '''
@@ -64,6 +70,7 @@ class Window(QWidget):
         qp.begin(self)
         self.drawPol(qp)
         qp.end()
+        self.update()
 
 
     def keyPressEvent(self, e):
@@ -71,13 +78,19 @@ class Window(QWidget):
         Gère les évènements clavier
         '''
         if e.key() == Qt.Key_Up:
-            self.ecosys.eco["bulbi"][0].translater(self.ecosys.carto.carte, self.ecosys.eco, 1)
+            self.ecosys.eco['h'][0].translater(self.ecosys.carto.carte, self.ecosys.eco, 1)
         elif e.key() == Qt.Key_Down:
-            self.ecosys.eco["bulbi"][0].translater(self.ecosys.carto.carte, self.ecosys.eco, -1)
+            self.ecosys.eco['h'][0].translater(self.ecosys.carto.carte, self.ecosys.eco, -1)
         elif e.key() == Qt.Key_Left:
-            self.ecosys.eco["bulbi"][0].tourner(self.ecosys.carto.carte, self.ecosys.eco, -np.pi/8)
+            self.ecosys.eco['h'][0].tourner(self.ecosys.carto.carte, self.ecosys.eco, -np.pi/8)
         elif e.key() == Qt.Key_Right:
-            self.ecosys.eco["bulbi"][0].tourner(self.ecosys.carto.carte, self.ecosys.eco, np.pi/8)
+            self.ecosys.eco['h'][0].tourner(self.ecosys.carto.carte, self.ecosys.eco, np.pi/8)
+        elif e.key() == Qt.Key_Space:
+            for i in range(300):
+                self.ecosys.next_cycle()
+                #print(self.ecosys.eco['h'][0].comportement.currentState)
+                #print('--------------------------------\n\n')
+                self.ecosys.signal.emit()
 
 
     def drawPol(self, qp):
@@ -99,6 +112,12 @@ class Window(QWidget):
                     qp.setBrush(QColor(21, 186, 52))
                     qp.drawRect(case.rect)
 
+                elif case.id_res == -1:
+                    #herbe épuisée
+                    qp.setPen(QColor(3, 104, 25))
+                    qp.setBrush(QColor(3, 104, 25))
+                    qp.drawRect(case.rect)
+
                 elif case.id_res == 0:
                     #terre
                     qp.setPen(QColor(179, 131, 62))
@@ -113,13 +132,13 @@ class Window(QWidget):
 
         qp.setPen(QColor(255, 0, 0))
         qp.setBrush(QColor(255, 0, 0))
-        qp.drawConvexPolygon(self.ecosys.eco["bulbi"][0].vision.poly.shape)
-        self.update()
-
+        qp.drawConvexPolygon(self.ecosys.eco['h'][0].vision.poly.shape)
 
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     w = Window()
+    w.show()
+
     sys.exit(app.exec_())

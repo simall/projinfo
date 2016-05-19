@@ -85,14 +85,13 @@ def check_borders(fig, size_x, size_y):
     '''
     Vérifie que le polygone ne sort pas de la carte
     '''
-    for i in range(fig.nbp):
-        pt = fig.shape.at(i)
+    pt = fig.get_center()
 
-        if pt.x() < 0 or pt.x() > size_x:
-            return False
+    if pt.x() < 0 or pt.x() > size_x:
+        return False
 
-        if pt.y() < 0 or pt.y() > size_y:
-            return False
+    if pt.y() < 0 or pt.y() > size_y:
+        return False
     return True
 
 
@@ -143,8 +142,10 @@ def check_glob_coll(fig, ofig):
     '''
     I = QPointF(100000.0+random.randint(0,100),100000.0+random.randint(0,100))
 
+    list_points = [fig.shape.at(i) for i in range(fig.nbp)]
+
     for i in range(fig.nbp):
-        P = fig.shape.at(i)
+        P = list_points[i]
         nb_intersect = 0
 
         for j in range(ofig.nbp):
@@ -161,8 +162,10 @@ def check_glob_coll(fig, ofig):
         if nb_intersect%2 == 1:
             return True
 
+    list_points = [ofig.shape.at(i) for i in range(ofig.nbp)]
+
     for i in range(ofig.nbp):
-        P = ofig.shape.at(i)
+        P = list_points[i]
         nb_intersect = 0
 
         for j in range(fig.nbp):
