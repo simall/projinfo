@@ -43,7 +43,7 @@ class Herbe(Ressource):
 	def __init__(self, pos):
 		'''
 		Constructeur
-		Prend en paramêtres:
+		Prend en paramètres:
 		- la position de la ressource sur la carte
 		'''
 		self.cycle_vie = constantes.cyles_par_jour
@@ -65,7 +65,7 @@ class Eau(Ressource):
 	def __init__(self, pos):
 		'''
 		Constructeur
-		Prend en paramêtres:
+		Prend en paramètres:
 		- la position de la ressource sur la carte
 		'''
 		self.cycle_vie = -1#ressource infinie
@@ -85,9 +85,31 @@ class Terre():
 	def __init__(self, pos):
 		'''
 		Constructeur
-		Prend en paramêtres:
+		Prend en paramètres:
 		- la position de la terre sur la carte
 		'''
 		self.id_res = 0
 		self.rect = QRectF(pos[0], pos[1], constantes.carre_res[0], constantes.carre_res[1])
 		self.passable = True
+
+class Cadavre():
+	'''
+	Créé une case pour le cadavre de l'animal mort
+	'''
+	def __init__(self, pos):
+		'''
+		Constructeur
+		Prend en paramètres:
+		- la position du cadavre sur la carte
+		'''
+		self.id_res = 3 #vaut -3 si le cadavre est périmé
+		self.quantite = 60
+		self.cycle_vie = constantes.cyles_par_jour
+		self.passable = False
+
+		self.rect = QRectF(pos[0], pos[1], constantes.carre_res[0], constantes.carre_res[1])
+
+		def reduction(self):
+			old = self.quantite
+			self.quantite -= constantes.bouchee
+			return (old-self.quantite)
