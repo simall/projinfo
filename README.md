@@ -26,3 +26,5 @@ Bugs à corriger:
 - le current case qui peut dépasser le tableau
 - le blocage quand un animal veut aller vers la bouffe et est bloqué par un autre
 - herbe clignotante
+- coll_touch pas très utile
+- regarder pour le pile cadavre (case != id)
