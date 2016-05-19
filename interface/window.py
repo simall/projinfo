@@ -45,9 +45,13 @@ class Window(QWidget):
         # self.ecosys.add_animal(Herbivore(), 'h')
         # self.ecosys.eco['h'][1].vision.update(self.ecosys.eco['h'][1].poly.head(), self.ecosys.eco['h'][1].poly.heading)
 
-        for i in range(20):
+        for i in range(10):
             self.ecosys.add_animal(Herbivore(), 'h')
             self.ecosys.eco['h'][i].vision.update(self.ecosys.eco['h'][i].poly.head(), self.ecosys.eco['h'][i].poly.heading)
+
+        for i in range(5):
+            self.ecosys.add_animal(Herbivore(), 'p')
+            self.ecosys.eco['p'][i].vision.update(self.ecosys.eco['p'][i].poly.head(), self.ecosys.eco['p'][i].poly.heading)
 
 
         self.resize(constantes.nb_carres_largeur*constantes.carre_res[0], constantes.nb_carres_hauteur*constantes.carre_res[1])
@@ -92,7 +96,6 @@ class Window(QWidget):
                 #print('--------------------------------\n\n')
                 self.ecosys.signal.emit()
 
-
     def drawPol(self, qp):
         '''
         Affiche les éléments à l'écran
@@ -124,15 +127,33 @@ class Window(QWidget):
                     qp.setBrush(QColor(179, 131, 62))
                     qp.drawRect(case.rect)
 
-        qp.setPen(QColor(0, 0, 0))
-        qp.setBrush(QColor(0, 0, 0))
+                elif case.id_res == 3:
+                    #cadavre
+                    qp.setPen(QColor(219, 0, 115))
+                    qp.setBrush(QColor(219, 0, 115))
+                    qp.drawRect(case.rect)
+
+                elif case.id_res == -3:
+                    #cadavre périmé
+                    qp.setPen(QColor(254, 231, 240))
+                    qp.setBrush(QColor(254, 231, 240))
+                    qp.drawRect(case.rect)
+
         for key_espece in self.ecosys.eco:
+            if key_espece == 'h':
+                qp.setPen(QColor(0, 0, 0))
+                qp.setBrush(QColor(0, 0, 0))
+            elif key_espece == 'p':
+                qp.setPen(QColor(133, 6, 6))
+                qp.setBrush(QColor(133, 6, 6))
             for animal in self.ecosys.eco[key_espece]:
-                qp.drawConvexPolygon(animal.poly.shape)
+                qp.drawConvexPolygon(animal.poly.shape)        
 
         qp.setPen(QColor(255, 0, 0))
         qp.setBrush(QColor(255, 0, 0))
         qp.drawConvexPolygon(self.ecosys.eco['h'][0].vision.poly.shape)
+        qp.drawConvexPolygon(self.ecosys.eco['p'][0].vision.poly.shape)
+
 
 
 
