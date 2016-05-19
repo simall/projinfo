@@ -233,6 +233,98 @@ def doEscape(animal, ressources, eco, current_case, coll_vision_cases, coll_visi
 	compteur -= 1
 	return event
 
+def doMove(animal, ressources, eco, current_case, coll_vision_cases, coll_vision_eco, coll_touch):
+	event = "retour_normal"
+	preda = None
+
+	head = animal.poly.shape.at(0)
+	
+	angle = random.uniform(-np.pi/2, np.pi/2)
+
+	animal.tourner(ressources.carte, eco, angle)
+	animal.translater(ressources.carte, eco, 1)
+
+	if animal.eau < animal.quota_eau:
+		event = "soif"
+	elif animal.nourriture < animal.quota_nourriture:
+		event = "faim"
+
+	return event
+
+def doLookPrey(animal, ressources, eco, current_case, coll_vision_cases, coll_vision_eco, coll_touch):
+	event = "faim"
+	herbi = None
+	dist = 0
+
+	head = animal.poly.shape.at(0)
+
+	for elt in coll_vision_eco:
+		if elt.espece == 'h':
+			if herbi is None:
+				herbi = elt
+				center = herbi.poly.get_center()
+				dist = (head.x() - center.x())**2 + (head.y() - center.y())**2
+			else:
+				center = elt.poly.get_center()
+				dist_calc = (head.x() - center.x())**2 + (head.y() - center.y())**2
+				if dist_calc < dist:
+					dist = dist_calc
+					herbi = elt
+
+	if herbi is None:
+		angle = random.uniform(-np.pi/2, np.pi/2)
+
+		animal.tourner(ressources.carte, eco, angle)
+		animal.translater(ressources.carte, eco, 1)
+	else:
+		center = herbi.poly.get_center()
+		head.setY(-head.y()+constantes.carre_res[1]*constantes.nb_carres_hauteur)
+		center.setY(-center.y()+constantes.carre_res[1]*constantes.nb_carres_hauteur)
+
+		angle = sens_trigo(atan2(center.y() - head.y(), center.x() - head.x()))
+
+		animal.tourner(ressources.carte, eco, animal.poly.heading*np.pi/180 - angle)
+		animal.translater(ressources.carte, eco, 1)
+		for elt in coll_touch:
+			if elt.espece == 'h':
+				elt.vie = 0
+				ressources.dead(current_case[0], current_case[1])
+				event = "proie_tuee"
+				# à faire aussi : supprimer la proie du dictionnaire
+
+	return event
+
+def doEatPrey(animal, ressources, eco, current_case, coll_vision_cases, coll_vision_eco, coll_touch):
+	event = "proie_tuee"
+	dist = 0
+
+	for elt in coll_vision_cases:
+		if elt.id_res == 3:
+			center = elt.rect.center()
+			dist = (head.x() - center.x())**2 + (head.y() - center.y())**2
+
+		center = cadavre.rect.center()
+		head.setY(-head.y()+constantes.carre_res[1]*constantes.nb_carres_hauteur)
+		center.setY(-center.y()+constantes.carre_res[1]*constantes.nb_carres_hauteur)
+
+		angle = sens_trigo(atan2(center.y() - head.y(), center.x() - head.x()))
+
+		animal.tourner(ressources.carte, eco, animal.poly.heading*np.pi/180 - angle)
+		animal.translater(ressources.carte, eco, 1)
+
+	case = ressources.carte[current_case[0]][current_case[1]]
+	animal.manger(case)
+
+	if case.quantite == 0:
+		event = "faim"
+
+	if animal.nourriture >= animal.quota_nourriture:
+		event = "retour_normal"
+		return event
+
+	return event
+
+
 class FSM():
 	def __init__(self):
 		self.transitions = {}
