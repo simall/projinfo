@@ -109,12 +109,15 @@ class Ecosys(QObject):
 				animal.calcVie(jour_ecoule)
 
 		self.carto.check_regen_state()
+		self.carto.check_dead_state()
+		self.carto.check_rotten_state()
+		
 		if jour_ecoule:
 			print(self.nb_jours)
 
 	def is_dead(self, animal):
 		'''
-		Renvoit True si l'animal passé en paramêtre est mort, False sinon
+		Renvoit True si l'animal passé en paramètre est mort, False sinon
 		'''
 		if animal.vie == 0:
 			return True
