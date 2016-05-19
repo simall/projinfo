@@ -21,3 +21,8 @@ Objectifs à moyen terme:
 Objectifs à long terme:
 - étoffer les classes herbivores, prédateurs et charognards
 - faire une interface graphique 3D avec des super effets (optionnel) :)
+
+Bugs à corriger:
+- le current case qui peut dépasser le tableau
+- le blocage quand un animal veut aller vers la bouffe et est bloqué par un autre
+- herbe clignotante
