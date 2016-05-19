@@ -272,3 +272,58 @@ class Herbivore(Animal):
 	def next_state(self, ressources, eco, current_case, list_vision_cases, list_vision_eco, list_touch_cases):
 		event = (self.comportement.run())(self, ressources, eco, current_case, list_vision_cases, list_vision_eco, list_touch_cases)
 		self.comportement.currentEvent = event
+
+
+class Pretadeur(Animal):
+
+	def __init__(self):
+		'''
+		Constructeur
+		'''
+		self.vie = 40
+		self.rapidite = 6
+
+		self.pas = 1
+		self.poly = Triangle(random.randint(10,300), random.randint(10,300), 4, 6, 90)
+		self.vision = Champ_Vison(80, np.pi/12, self.poly.heading)
+
+		self.quota_eau = 50
+		self.quota_nourriture = 100
+
+		self.eau = 50
+		self.nourriture = 100
+
+		self.comportement = FSM()
+
+		# Définition du comportement
+		self.comportement.add_state("se_balader")
+		self.comportement.add_state("chercher_nourriture")
+		self.comportement.add_state("manger")
+		self.comportement.add_state("chercher_eau")
+		self.comportement.add_state("boire")
+
+		self.comportement.add_event("faim")
+		self.comportement.add_event("proie_tuee")
+		self.comportement.add_event("retour_normal")
+		self.comportement.add_event("soif")
+		self.comportement.add_event("eau_trouvee")
+
+		self.comportement.add_transition("se_balader", "retour_normal", "se_ballader", doMove)
+		self.comportement.add_transition("se_balader", " faim", "chercher_nourriture", doLookPrey)
+		self.comportement.add_transition("se_balader", "soif", "chercher_eau", doLookWater)
+
+		self.comportement.add_transition("chercher_nourriture", "faim", "chercher_nourriture", doLookPrey)
+		self.comportement.add_transition("chercher_nourriture", "proie_tuee", "manger", doEatPrey)
+
+		self.comportement.add_transition("manger", "proie_tuee", "manger", doEatPrey)
+		self.comportement.add_transition("manger", "retour_normal", "se_balader", doMove)
+
+		self.comportement.add_transition("chercher_eau", "soif", "chercher_eau", doLookWater)
+		self.comportement.add_transition("chercher_eau", "eau_trouvee", "boire", doDrink)
+
+		self.comportement.add_transition("boire", "eau_trouvee", "boire", doDrink)
+		self.comportement.add_transition("boire", "retour_normal", "se_balader", doMove)
+
+	def next_state(self, ressources, eco, current_case, list_vision_cases, list_vision_eco, list_touch_cases):
+		event = (self.comportement.run())(self, ressources, eco, current_case, list_vision_cases, list_vision_eco, list_touch_cases)
+		self.comportement.currentEvent = event
