@@ -1,0 +1,494 @@
+\makeatletter\def\input@path{{styles/}}\makeatother
+\documentclass[a4paper,11pt,final,oneside]{article}
+
+%\documentclass{guide}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc} % Permet de régler l'affichage du \textsc dans \author
+\usepackage[pdftex]{graphicx}
+\usepackage{setspace}
+\usepackage[pdftex, pdfborder={0 0 0}]{hyperref}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{amsmath}
+\geometry{hmargin=3.5cm,vmargin=4cm}
+%\usepackage{fullpage}
+
+%RequirePackage{diagbox} %diagbox remplace slashbox
+
+\RequirePackage{xcolor}
+
+\RequirePackage{makeidx} % creation d'index
+\RequirePackage[english,french]{babel} % style francais
+% pas d'espace automatiques avant les signes de ponctuation doubles !
+\NoAutoSpaceBeforeFDP
+
+% graphicx avec la bonne option, le chemin des images 
+% et les types d'images valides
+%\RequirePackage[pdftex]{graphicx}
+\graphicspath{{pdfs/}{pngs/}{imgs/}}
+\DeclareGraphicsExtensions{.pdf,.png,.mps}
+
+%\pdfpageattr {/Group << /S /Transparency /I true /CS /DeviceRGB>>}
+
+
+\RequirePackage{amsmath,amssymb,amsthm,euscript}
+
+\newcommand{\p}{\paragraph}
+
+\usepackage{listingsutf8}
+\usepackage{listings}
+\definecolor{green_comment}{rgb}{0.25,0.5,0.5}
+\lstset{  
+	  inputencoding=utf8/latin1,
+	  basicstyle=\small\ttfamily\upshape,
+          keywordstyle=\color{blue}\bfseries,
+          identifierstyle=,
+          commentstyle=\ttfamily\color{green_comment},
+          stringstyle=\ttfamily\color{red},
+          showstringspaces=false,
+          numbers=left,
+          firstnumber=1,
+          numberstyle=\tiny,
+          stepnumber=1,
+          frame=single,
+          breaklines=true, 
+          language=Python,
+          literate={
+          	á}{{\'a}}{1} 
+          	{ã}{{\~a}}{1} 
+          	{é}{{\'e}}{1} 
+          	{è}{{\`e}}{1} 
+          	{à}{{\`a}}{1} 
+          	{ç}{{\c{c}}}{1} 
+          	{œ}{{\oe}}{1} 
+          	{ù}{{\`u}}{1}
+                {É}{{\'E}}{1}
+                {È}{{\`E}}{1}
+                {À}{{\`A}}{1}
+                {Ç}{{\c{C}}}{1}
+                {Œ}{{\OE}}{1}
+                {Ê}{{\^E}}{1}
+                {ê}{{\^e}}{1}
+                {î}{{\^i}}{1}
+                {ô}{{\^o}}{1}
+                {û}{{\^u}}{1}
+                {ë}{{\¨{e}}}1
+                {û}{{\^{u}}}1
+                {â}{{\^{a}}}1
+                {Â}{{\^{A}}}1
+                {Î}{{\^{I}}}1,}
+          
+%\lstset{
+%	inputencoding=utf8/latin1,
+%	language=python,                % choose the language of the code
+%	basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+%	numbers=left,                   % where to put the line-numbers
+%	numberstyle=\bf \tiny \color{black},      % the size of the fonts that are used for the line-numbers
+%	stepnumber=1,                   % the step between two line-numbers. If it is 1 each line will be numbered
+%	numbersep=5pt,                  % how far the line-numbers are from the code
+%	backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+%	showspaces=false,               % show spaces adding particular underscores
+%	showstringspaces=false,         % underline spaces within strings
+%	showtabs=false,                 % show tabs within strings adding particular underscores
+%	frame=single,           % adds a frame around the code
+%	tabsize=2,          % sets default tabsize to 2 spaces
+%	captionpos=t,           % sets the caption-position to top
+%	breaklines=true,        % sets automatic line breaking
+%	breakatwhitespace=false,    % sets if automatic breaks should only happen at whitespace
+%	escapeinside={\%*}{*)}          % if you want to add a comment within your code
+%}
+
+
+%%% Dessin des automates
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+\usetikzlibrary{positioning}
+\tikzset{
+    state/.style={
+           rectangle,
+           rounded corners,
+           draw=black, very thick,
+           minimum height=2em,
+           inner sep=2pt,
+           text centered,
+           },
+}   
+
+\RequirePackage{pageGardeEnsta}
+\RequirePackage[xindy,acronymlists={glo},toc]{glossaries} % glossaires
+\newglossary{glo}{acr1}{acn1}{Glossaire}
+%\newglossary{gloen}{acr2}{acn2}{English glossary}
+
+\title{Simulation d'un écosystème \\ Partie 1}
+\author{Simon \textsc{Allenic} \& Pierre \textsc{Erdeven}\\
+  \texttt{simon.allenic@ensta-bretagne.org} \\
+  \texttt{pierre.erdeven@ensta-bretagne.org} \\ \vspace{1cm}
+  Groupe 1}
+\date{\today}
+\doctype{Projet Informatique}
+\promo{UV 2.1}
+\etablissement{\textsc{Ensta} Bretagne\\2, rue François Verny\\
+  29806 \textsc{Brest} cedex\\\textsc{France}\\Tel +33 (0)2 98 34 88 00\\ \url{www.ensta-bretagne.fr}}
+\logoEcole{\includegraphics[height=4.2cm]{logo_ENSTA_Bretagne_Vertical_CMJN}}
+
+\pdfinfo{
+  /Title    ()
+  /Author   ()
+  /Creator  ()
+  /Producer ()
+  /Subject  ()
+  /Keywords ()
+}
+
+\newcommand{\reporttitle}{Projet Informatique}     % Titre
+\newcommand{\reportauthor}{Simon \textsc{Allenic} \& Pierre \textsc{Erdeven}} % Auteur
+\newcommand{\reportsubject}{Simulation d'un écosystème} % Sujet
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\degr}{\ensuremath{^\circ}}
+\setlength{\parskip}{1ex} % Espace entre les paragraphes
+
+\hypersetup{
+    pdftitle={\reporttitle},%
+    pdfauthor={\reportauthor},%
+    pdfsubject={\reportsubject},%
+    pdfkeywords={rapport} {ENSTA Bretagne} {IT} {Group 1}
+}
+
+
+
+
+\begin{document}
+\theoremstyle{plain}
+\newtheorem{theo}{Théorème}
+\newtheorem{mydef}{Définition}
+
+\clearpage\maketitle
+\thispagestyle{empty}
+\newpage
+
+%\section*{Résumé}
+%\addcontentsline{toc}{section}{Résumé}
+
+%\section*{Mots-clés}
+%\addcontentsline{toc}{section}{Mots-clés}
+
+\newpage
+
+\tableofcontents
+\newpage
+
+	\section*{Introduction}
+	\addcontentsline{toc}{section}{Introduction}
+
+\paragraph{} Le programme présenté dans ce rapport simule un écosystème. Les animaux sont divisés en plusieurs espèces telles que les herbivores, les prédateurs et les charognards. Ils évoluent dans un environnement assimilé à une carte. Sur cette dernière se trouve, en plus des animaux, les ressources dont ils ont besoin pour vivre. Toutes les espèces ont besoin d'eau. Les herbivores mangent de l'herbe. Les prédateurs mangent les herbivores. Les charognards mangent les cadavres des animaux morts. Leur vie est régie par jours composés de plusieurs cycles. Chaque jour l'animal vieillit.
+
+\paragraph{} L'intérêt d'un tel programme réside dans l'observation de l'évolution d'une espèce en fonction de paramètres définis au préalable. Comme les charognards mangent les animaux morts, seul l'évolution des prédateurs et des herbivores seront liées. Afin de vérifier la cohérence du programme de simulation avec la réalité, il pourra être comparé aux équations de \textsc{Lotka - Volterra} qui sont désignées aussi sous le terme de \og modèle proie-prédateur \fg.
+
+\paragraph{} Le présent rapport s'intéresse à la partie algorithmique du programme. Il est divisé en quatre chapitres. Le premier traite des différentes pistes envisagées et des hypothèses réductrices choisies. Le deuxième concerne la description générale du programme. Le troisième montre ses mécanismes fondamentaux. Pour finir, le quatrième présente les différents tests effectués, les perspectives et améliorations à apporter à cette simulation.
+
+\newpage
+
+	\section{Génèse du programme}
+	\label{sec:gen}
+
+		\subsection{Pistes envisagées}
+
+\paragraph{} Pour répondre à la problématique, deux pistes ont été envisagées. La deuxième a rapidement dominé la première par sa clarté et sa facilité de mise en \oe{}uvre.
+
+\paragraph{} La première piste proposée démarrait d'une classe abstraite nommée \textit{Animal} dans laquelle toutes les propriétés communes à tous les animaux étaient définies. Les classes \textit{Herbivore}, \textit{Predateur} et \textit{Charognard} héritaient alors de la classe abstraite \textit{Animal}. Le séquencement de ces sous-classes a posé problème. En effet, les ressources ont été traitées au cas par cas dans les classes représentantes les espèces, et la méthode permettant de changer leur comportement faisait appel à d'autres classes elles aussi définies au cas par cas. Par exemple, une classe nommée \textit{Normal\_Herbivore} héritait de la classe \textit{Animal}, ce qui déjà n'était pas très cohérent, et permettait de définir le comportement normal d'un herbivore. Une autre classe nommée \textit{Faim\_Herbivore} qui héritait aussi de la classe abstraite définissait le comportement d'un herbivore affamé. On se rend alors très vite compte du nombre de classes nécessaires pour coder les différents comportements de tous les animaux. Cette piste n'était pas envisageable du point de vue de l'optimisation du programme.
+
+\paragraph{} La deuxième piste a tout de même été inspirée de la première dans ses premières lignes. En d'autres termes, la super-classe \textit{Animal} a été conservée ainsi que ses trois sous-classes. Le comportement de l'espèce a quand à lui été défini dans une seule méthode ce qui en simplifie grandement son exécution.
+
+		\subsection{Hypothèses réductrices}
+
+\paragraph{} Pour simuler l'écosystème, nous avons émis les hypothèses réductrices suivantes :
+
+\begin{itemize}
+	\item L'eau est une ressource illimitée.
+	\item Tous les végétaux comestibles sont réduits à de l'herbe. 
+	\item L'animal ne dort pas.
+	\item La reproduction n'est pas prise en compte pour l'instant.
+	\item Seuls deux facteurs agissent sur la vie de l'animal : la vieillesse et le manque d'eau ou de nourriture. La maladie n'intervient pas.
+	\item Lors de l'attaque d'un prédateur l'herbivore tentera de fuir. S'il n'y parvient pas, il sera forcément tué. La blessure n'existe pas.
+	\item Les prédateurs ne s'entretuent pas pour déterminer le dominant. Il n'y pas de hiérarchie dans les espèces.
+\end{itemize}
+
+
+	\section{Description générale}
+	\label{sec:des}
+
+\paragraph{} Avant de décrire chacune des classes du programme, attardons nous sur son fonctionnement général. Pour une meilleure lisibilité le programme est divisé en sept fichiers. La classe qui pilote l'écosystème est \textit{Ecosys}. C'est elle qui contient le \textit{main} et qui permet de gérer le nombre des animaux présents sur la carte. Elle commande le nombre de cycles et de jours. En fin de journée, elle vérifie si les quotas en nourriture et en eau des animaux sont atteints. Elle fait appel à la méthode \textit{calcVie} de la classe \textit{Animal} qui calcule la perte de vie de l'animal. L'action de ce dernier (déplacements, boire, manger,...) sera effectué à chaque cycle. Les animaux sont définis par héritage de la classe \textit{Animal}. La carte est créée dans un fichier texte puis chargée dans la classe \textit{ResMap}. Chaque ressource possède un identifiant permettant de faire le lien entre ce fichier texte et la classe abstraite \textit{Ressource} d'où elles sont gérées. Pour finir, la représentation géométrique des animaux et de leur champ de vision est générée dans le fichier \texttt{object.py}. La connaissance de ces paramètres permet de développer la gestion des collisions avec les autres animaux, les bords de la carte ou encore les différentes ressources.
+
+\paragraph{} Le diagramme de classe de la Figure~\ref{fig:diag} entre un peu plus dans le détail de l'héritage et du polymorphisme des différentes classes du programme. Par la suite, nous ne détaillerons pas toutes les classes et méthodes le composant mais seulement les fondamentales.
+
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{diag_eco}
+\caption{Diagramme de classe}
+\label{fig:diag}
+\end{figure}
+
+
+
+	\section{Mécanismes fondamentaux}
+	\label{sec:mec}
+	
+		\subsection{Classe \textit{Ecosys}}
+		
+\paragraph{} Cette classe est le noyau du programme. Elle gère les animaux et leur vie. Elle contient des méthodes qui ajoutent ou retirent un animal et vérifient si celui-ci est mort.
+
+			\subsubsection{Méthode \textit{add\_animal}}
+
+\paragraph{} La méthode \textit{add\_animal} permet d'ajouter un animal dans l'écosystème. Celui-ci est ajoutée dans une liste correspondant à son espèce. L'écosystème est organisé par un dictionnaire dont les clés sont les espèces et les valeurs sont leurs animaux.
+
+			\subsubsection{Méthode \textit{next\_cycle}}
+
+\paragraph{} La méthode \textit{next\_cycle} gère la vie de l'animal. Tous les animaux de l'écosystème évolueront en même temps, rythmés par des cycles. À la fin de la journée, la méthode remet à 0 les réserves en nourriture et en eau de l'animal. La méthode \textit{next\_cycle} va donc parcourir tout l'écosystème et, pour chaque animal, appeler la méthode \textit{next\_state} qui, à partir de ce que l'animal voit et de ses besoins, va décider de sa prochaine action.
+
+%ajout: à modifier dans le rapport final
+
+		\subsection{Classe abstraite \textit{Animal}}
+		
+\paragraph{} Cette classe contient les variables communes à tous les animaux. Celles-ci sont stockées sous forme de variable de classe. Les méthodes communes aux animaux y sont définies. On y trouve par exemple les méthodes \textit{manger}, \textit{boire}, \textit{translater} et \textit{tourner}. Le comportement propre à chaque espèce se retrouvera dans la méthode \textit{next\_state} qui est elle-même définie dans les sous-classes de \textit{Animal}.
+
+			\subsubsection{Méthode \textit{calcVie}}
+			
+\paragraph{} La méthode \textit{calcVie} gère la réduction de la vie de l'animal. Elle est appelée par la méthode \textit{next\_cycle} de la classe \textit{Ecosys} lorsqu'un jour s'est écoulé. C'est la raison pour laquelle elle prend en paramètre un booléen indiquant si oui ou non le jour est terminé. Elle retire alors une unité de vie à la variable \textit{vie} pour simuler la vieillesse de l'animal. Elle lui retire également autant d'unité de vie qu'il manque entre l'eau qu'il a bu dans la journée et son quota nécessaire à sa survie. Cette opération traduit simplement le fait que si un animal ne boit pas, au bout d'un certain temps qui dépend de son âge, celui-ci meurt. Le même raisonnement est appliqué pour la nourriture.
+
+			\subsubsection{Méthode \textit{tryTrans}}
+
+\paragraph{} La méthode \textit{tryTrans} permet de vérifier si l'animal peut avancer ou reculer. Elle utilise pour cela les méthodes programmées dans le fichier \texttt{collisions.py} qui vérifient les collisions avec les bords de la carte et les autres polygones présents. Elle est appelée dans la méthode \textit{translater}. Le principe est d'utiliser une figure virtuelle de même forme que celle de l'espèce considérée. Il suffit ensuite de vérifier s'il y a collision avec des éléments de la carte lors de la translation de ce polygone. La méthode \textit{tryRotate} est basée sur la même idée.
+
+		\subsection{Classe \textit{Herbivore}}
+		
+\paragraph{} La classe \textit{Herbivore} est encore en cours d'élaboration. Dans le constructeur, on y définit les caractéristiques de l'espèce. La méthode \textit{next\_state} a pour objectif de suivre le comportement défini par l'automate de la figure~\ref{fig:her}.
+
+\begin{figure}[h!]
+\centering	{	
+\begin{tikzpicture}[->,>=stealth']
+
+ % STATE Suivre les autres
+\node[state] (Suivre les autres) 
+{\begin{tabular}{c} % création du contenu
+\textbf{Suivre les autres} \\
+(0)
+\end{tabular}};
+
+% STATE Chercher à manger
+\node[state,     
+node distance=5cm,   
+right of=Suivre les autres,    
+yshift=-3cm,
+xshift=-1cm] (Chercher à manger) 
+{\begin{tabular}{c}
+\textbf{Chercher}\\
+\textbf{à}\\
+\textbf{manger}\\
+(2)
+\end{tabular}};
+
+% STATE Manger
+\node[state,
+below of=Chercher à manger,
+node distance=5cm,
+xshift=-0.5cm] (Manger) 
+{\begin{tabular}{c}
+\textbf{Manger}\\
+(3)
+\end{tabular}};
+
+% STATE Chercher à boire
+\node[state,
+left of=Suivre les autres,
+node distance=5cm,
+yshift=-3cm,
+xshift=1.5cm] (Chercher à boire) 
+{\begin{tabular}{c}
+\textbf{Chercher}\\
+\textbf{à}\\
+\textbf{boire}\\
+(4)
+\end{tabular}};
+ 
+% STATE Boire
+\node[state,
+below of=Chercher à boire,
+node distance=5cm,
+xshift=0.5cm] (Boire) 
+{\begin{tabular}{c}
+\textbf{Boire}\\
+(5)
+\end{tabular}};
+
+% STATE Fuir
+\node[state,
+below of=Suivre les autres,
+node distance=3cm,
+yshift=-2cm] (Fuir) 
+{\begin{tabular}{c}
+\textbf{Fuir}\\
+(1)
+\end{tabular}};
+ 
+
+\path 
+(Suivre les autres) edge node[right] {faim} (Chercher à manger)
+(Chercher à manger) edge node[right]{trouvé} (Manger)
+(Manger) edge[bend right=85] node[right,yshift=5em,xshift=-2em] {rassasié} (Suivre les autres)
+ 
+(Suivre les autres) edge[bend left=10] node[right] {détecté} (Fuir)
+(Fuir) edge[bend left=10]  node[left] {échappé} (Suivre les autres)
+ 
+ 
+(Suivre les autres) edge node[left] {soif} (Chercher à boire)
+(Chercher à boire) edge node[left] {trouvé} (Boire)
+(Boire) edge[bend left=85] node[left,yshift=5em,xshift=2em]{hydraté} (Suivre les autres)
+ 
+(Chercher à boire) edge node[below,xshift=-1em]{détecté} (Fuir)
+(Chercher à manger) edge node[below,xshift=1em]{détecté} (Fuir)
+(Boire) edge node[right]{détecté} (Fuir)
+(Manger) edge node[left]{détecté} (Fuir)
+;
+
+\end{tikzpicture}
+\caption{Diagramme d'état d'un herbivore}
+\label{fig:her}}
+\end{figure}
+
+		\subsection{Ressources}
+		
+\paragraph{} Les ressources sont gérées avec quatre classes. De la même manière que pour la gestion des espèces, les ressources ont à leur tête une classe abstraite appelée \textit{Ressource}. On y définit leurs caractéristiques communes comme leur quantité, leur cycle de vie et un identifiant. On indique également si l'animal peut marcher sur cette ressource ou non par un booléen. Cette variable se révèle importante pour l'eau qui, dans la plupart des cas, est infranchissable. En ce qui concerne leur quantité, l'eau est par hypothèse illimitée. L'herbe diminue en fonction du nombre de bouchées de l'animal.
+
+\paragraph{} Une remarque importante concerne la gestion des cadavres des animaux. Elle sera traitée dans cette partie car assimilée à une source de nourriture pour les charognards. La contrainte de la figure imposée sera remplie par la mise en place d'une liste simplement chaînée. Une case initialement herbe ou terre sera remplacée par une qui représentera le cadavre de l'animal en question. Et, redeviendra terre ou herbe après qu'un charognard l'ait mangé. La figure~\ref{fig:rep} permet de mieux visualiser ce concept. \\
+
+
+\begin{figure}[h!]
+\centering		
+\begin{tikzpicture}[->,>=stealth']
+
+ % STATE Terre ou Herbe 1
+\node[state] (Terre ou Herbe 1) 
+{\begin{tabular}{c} % création du contenu
+\textbf{Terre ou Herbe} \\
+\end{tabular}};
+
+% STATE Cadavre
+\node[state,     
+node distance=5cm,   
+right of=Terre ou Herbe 1] (Cadavre) 
+{\begin{tabular}{c}
+\textbf{Cadavre}\\
+\end{tabular}};
+
+% STATE Terre ou Herbe 2
+\node[state,     
+node distance=5cm,   
+right of=Cadavre] (Terre ou Herbe 2) 
+{\begin{tabular}{c}
+\textbf{Terre ou Herbe}\\
+\end{tabular}};
+
+\path 
+(Terre ou Herbe 1) edge (Cadavre)
+(Cadavre) edge (Terre ou Herbe 2)
+;
+
+\end{tikzpicture}
+\caption{Liste simplement chaînée pour la gestion des cadavres}
+\label{fig:rep}
+\end{figure}
+
+		\subsection{Représentation en mémoire de l'écosystème}
+Deux grands types de représentation sont utilisés dans le programme. Les ressources sont représentées par une case au sein d'une matrice tandis que les animaux sont représentés par un polygone, c'est à dire une liste de coordonnées.
+
+Les ressources (\textit{Eau} et \textit{Herbe}) \textit{Terre} ainsi que \textit{Cadavre} sont toutes appelées et stockées au sein de la classe \textit{ResMap}, dans un tableau à deux dimensions. La carte des ressources est chargée depuis un fichier dans le constructeur de la classe \textit{ResMap}. Dans ce fichier, on a les équivalences suivantes :
+\medskip
+\begin{itemize}
+	\item 0 = Terre
+	\item 1 = Herbe
+	\item 2 = Eau
+	\item 3 = Cadavre
+\end{itemize}
+\medskip
+
+L'eau et les cadavres ont une propriété particulière: ils peuvent s'épuiser. Il convient donc de gérer le cas où la ressource arrive à une quantité de 0. Il faut ensuite mettre en place la possibilité d'une régénération de ces ressources.
+
+En ce qui concerne l'herbe, lorsque la quantité présente dans une case arrive à 0, l'identifiant de la case ressource passe de 2 à -2, ce qui permet à l'interface graphique d'afficher la case avec une couleur différente. Un élément \textit{Case}, contenant les coordonnées de la case ressource concernée ainsi que le nombre de cycles nécessaire à sa régénération est ajouté sur une \textit{pile}. À la fin de la fonction \textit{next\_cycle}, et donc à chaque fin de cycle, on vient décrémenter le nombre de cycles qu'il faut attendre avant régénération. Quand ce nombre de cycles atteint 0, l'élément est dépilé, la case ressource voit son identifiant repasser à 2 et sa quantité redevenir maximum.
+
+La gestion des cadavres est un tout petit peu plus complexe puisque qu'elle contient deux phases. En effet, dés qu'un herbivore est touché par un prédateur, il meurt et devient un cadavre. Néanmoins ce cadavre passe par deux phases: la première où il est consommable par les prédateurs et les charognards et la deuxième où il n'est plus consommable que par les charognards. Il y a donc deux piles. Lorsque un animal meurt, la case ressource dans laquelle sa tête se situe est modifiée comme indique sur la figure \ref{rep} et un élément est ajouté à la première pile avec un compteur de cycles ("cadavre frais"). Une fois ce compteur arrivé à 0, l'élément est dépilé et ajouté à une seconde pile avec un nouveau compteur de cycles ("cadavre en putréfaction"). L'identifiant de la case ressource passe à -3. À la fin de ce second compteur, l'élément est dépilé de la seconde pile et la case ressource initiale est rétablie, le cadavre disparaît.
+Bien entendu, si la quantité de nourriture du cadavre atteint à 0 avant la fin des compteurs de cycles, le cadavre disparaît immédiatement.
+%ajout: à modifier dans le rapport final
+
+Lors de la création d'un Herbivore, 2 polygones sont créés. Un premier qui représente l'animal et un deuxième qui représente son champ de vision. Ces polygones sont créés en faisant appel à la classe \textit{Triangle} qui  hérite de la classe abstraite \textit{Shape}. Le champ de vision est attaché au polygone représentant \textit{Herbivore}, il se déplace de la même manière que lui. La mise à jour de la position du champ de vision est réalisée par la méthode \textit{update} de la classe \textit{Champ\_Vision}. 
+
+Un polygone n'est qu'une simple liste de coordonnées, il suffit donc d'effectuer le produit de chaque vecteur de coordonnées et d'une matrice de translation ou de rotation pour faire bouger le triangle. La principale difficulté se situe au niveau de la gestion des collisions. Deux polygones ne peuvent pas se chevaucher et un herbivore ne peut pas marcher dans l'eau par exemple. Pour éviter de lourds calculs inutiles plusieurs niveaux de gestion de collisions ont été implémentés. Les fonctions détaillées ci-dessous sont toutes issues du fichier \texttt{collisions.py}.
+
+
+Pour savoir sur quelle ressource se situe un point aux coordonnées quelconques, il suffit de connaître la place occupée par la ressource dans la matrice \textit{carte} de la classe \textit{Resmap}. \\
+
+\begin{lstlisting}
+def current_case(x_h, y_h):
+	'''
+	Retourne la place (i,j) qu'occupe la ressource sur lequel est le point (x_h, y_h) dans la carte.
+	Il suffit de diviser les coordonnées (x_h,y_h) par la longueur ou la largeur du carré qu'occupe la ressource sur la carte.
+	''' 
+    return (int(y_h//constantes.carre_res[1]), int(x_h//constantes.carre_res[0]))
+\end{lstlisting}
+
+La gestion de collisions entre polygones (donc entre animaux) est plus complexe et se fait en deux temps. D'abord il y a une première vérification avec la fonction \textit{check\_rect\_coll} qui prend en paramètre le polygone que l'on cherche à déplacer et la liste des autres polygones présents sur la carte. Pour chacun des polygones, la fonction extrait le meilleur carré qui l'englobe puis teste les collisions entre les carrés. En effet, tester des collisions entre carrés est très peu calculatoire.
+
+S'il y a collision entre deux carrés, et seulement dans ce cas, la fonction \\ \textit{{check\_glob\_coll}} est appelée pour tester très précisément la collision entre les deux triangles. La méthode est simple. Il faut placer un point I aléatoirement en dehors de l'écran. Ensuite on définit un rôle pour chacun des deux polygones. L'un des deux joue le rôle du polygone passif et l'autre le rôle du polygone actif. Pour chaque point $P$ du polygone actif, on regarde ensuite combien de segments $[AB]$ du polygone passif sont traversés par le segment $[IP]$. Si ce nombre est impair, il y a collision, s'il est pair il n'y pas collision. On répète ensuite l'opération en inversant les rôles des polygones actif et passif. 
+
+La fonction \textit{intersectSegment} se charge de tester s'il y a intersection entre deux segments $[AB]$ et $[IP]$. Pour cela, la fonction vérifie dans un premier temps si l'on ne se situe pas dans un cas limite, en calculant $D = det(\overrightarrow{AB}, \overrightarrow{IP})$. Si le déterminant vaut 0, alors les deux droites peuvent être parallèles ou confondues, on relance donc la fonction avec un autre point I. Sinon, on écrit les équations paramétriques des deux segments:
+\[J = A + u\overrightarrow{AB}\]
+\[K = I + t\overrightarrow{IP}\]
+
+On résout le système pour obtenir $t$ et $u$. Si les deux sont compris entre 0 inclus et 1 exclu, alors il y a bien intersection entre les deux segments.
+
+%début de la modification
+Comme précisé plus haut, chaque animal est affublé d'un champ de vision. Ce champ est en fait un arc de cercle attaché à tête de l'animal.
+
+\begin{center}
+\begin{figure}[h!]
+	\includegraphics[width=\textwidth]{vision.png}
+	\caption{Le principe de vision pour un animal}
+	\label{vision}
+\end{figure}
+\end{center}
+		
+	\section{Tests, perspectives et améliorations}
+	\label{sec:tes}
+	%à changer: plus de tests, nouvelle conclusion à mettre !
+\paragraph{} Le test est réalisé dans le fichier \texttt{ecosys.py}. Il ajoute deux herbivores et effectue un cycle. Son exécution retourne :
+
+\begin{lstlisting}
+jour 0
+espèce mouton (2)
+	80 10
+	80 10
+\end{lstlisting}
+
+Le nombre de gauche représente sa vie et celui de droite sa réserve de nourriture. On remarque que, au bout d'un cycle, les deux moutons ont bien mangé 10 unités d'herbe correspondant à une bouchée.
+
+\paragraph{} La partie algorithmique n'est pas encore terminée à l'heure actuelle. Les perspectives et améliorations seraient donc nombreuses à énumérer. Néanmoins, à court terme, l'objectif est d'étoffer la classe \textit{Herbivore} en créant les comportements plus avancés tels que la fuite ou encore la détection des prédateurs. À moyen terme, la création des deux autres classes \textit{Predateur} et \textit{Charognard} deviendra importante. La gestion de la ressource \textit{Cadavre}, la reproduction et la maturité des animaux sera développée à ce moment là également. Pour finir, sur le long terme, le développement de l'interface graphique afin de visualiser l'évolution de l'écosystème.
+
+\paragraph{} Dans notre cas, il est difficile de décorréler complètement la partie graphique de la partie algorithmique. En effet, gérer un système de collisions sans développer une interface graphique pour tester le bon déroulement du programme n'est pas une chose aisée. Pour accéder à un test graphique du système de collisions, il suffit d'exécuter le fichier \texttt{window.py}. Il est alors possible de contrôler un herbivore au clavier et de le faire se déplacer sur la carte.
+
+\newpage
+	\section*{Conclusion}
+	\addcontentsline{toc}{section}{Conclusion}
+
+\paragraph{} Les objectifs fixés initialement pour cette première partie ont été atteints. La partie algorithmique n'est pas terminée mais sa structure principale est établie et les futurs objectifs sont clairement définis. 
+
+\paragraph{} L'animal est pour le moment capable de vivre. Il peut boire, manger et se déplacer en respectant les limites de la carte et la physique des éléments. Cette dernière correspond à une rivière infranchissable dans notre cas.
+
+\paragraph{} En revanche, il n'est pas capable de vivre en autonomie. Par conséquent, l'un des objectifs de la deuxième partie consiste donc à automatiser la simulation. Les prédateurs et les charognards rejoindront les herbivores dans l'écosystème afin d'en étudier le comportement.
+
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
